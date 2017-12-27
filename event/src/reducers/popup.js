@@ -1,6 +1,7 @@
 const initialState = {
   currentStoryItem: null,
   isFullPopup: false,
+  isCookiesValid: true,
   cookies: {}
 };
 
@@ -20,6 +21,11 @@ export default (state = initialState, action) => {
     return {
       ...state,
       cookies: action.cookies
+    }
+    case 'SET_COOKIES_VALID':
+    return {
+      ...state,
+      isCookiesValid: action.isCookiesValid
     }
     default:
     return state;

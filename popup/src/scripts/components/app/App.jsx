@@ -5,6 +5,7 @@ import {Toolbar, ToolbarGroup, ToolbarSeparator, ToolbarTitle} from 'material-ui
 import {ListItem} from 'material-ui/List';
 import {Tabs, Tab} from 'material-ui/Tabs';
 import Avatar from 'material-ui/Avatar';
+import RaisedButton from 'material-ui/RaisedButton';
 import IconButton from 'material-ui/IconButton';
 import OpenInNewIcon from 'material-ui/svg-icons/action/open-in-new';
 import ActionExploreIcon from 'material-ui/svg-icons/action/explore';
@@ -12,6 +13,7 @@ import ActionSearchIcon from 'material-ui/svg-icons/action/search';
 import PeopleIcon from 'material-ui/svg-icons/social/people';
 import LiveTvIcon from 'material-ui/svg-icons/notification/live-tv';
 import PlaceIcon from 'material-ui/svg-icons/maps/place';
+import ErrorIcon from 'material-ui/svg-icons/alert/error';
 import {BottomNavigation, BottomNavigationItem} from 'material-ui/BottomNavigation';
 import CircularProgress from 'material-ui/CircularProgress';
 import Snackbar from 'material-ui/Snackbar';
@@ -25,7 +27,7 @@ import Story from './Story';
 import LiveVideo from '../live/LiveVideo';
 import SearchPage from '../search/SearchPage';
 import InstagramApi from '../../../../../utils/InstagramApi';
-import {getStorySlide} from '../../../../../utils/Utils';
+import {renderToolbar, getStorySlide} from '../../../../../utils/Utils';
 import AnalyticsUtil from '../../../../../utils/AnalyticsUtil';
 import $ from 'jquery';
 
@@ -170,9 +172,7 @@ class App extends Component {
         boxShadow: 'rgba(0, 0, 0, 0.117647) 0px 1px 6px, rgba(0, 0, 0, 0.117647) 0px 1px 4px'
       },
       tabs: {
-        position: 'fixed',
-        width: '55%',
-        marginTop: '56px'
+        marginTop: '5px'
       },
       friendsStoriesList: {
         width: '55%',
@@ -193,6 +193,36 @@ class App extends Component {
         transform: 'translate(0%, -50%)'
       }
     };
+    
+    const toolbarActionsGroup = (
+      <ToolbarGroup lastChild={true}>
+      {!this.state.isSearchActive &&
+        <IconButton
+        tooltip="Search"
+        tooltipPosition="bottom-center"
+        onClick={()=> {
+          this.setState({
+            currentStory: null,
+            isSearchActive: true
+          });
+          AnalyticsUtil.track("Search Button Clicked");
+        }}>
+        <ActionSearchIcon color={TAB_TEXT_COLOR_DARK_GRAY}/>
+        </IconButton>
+      }
+      {!this.state.isFullPopup &&
+        <IconButton
+        tooltip="Popout"
+        tooltipPosition="bottom-center"
+        onClick={()=> {
+          this.props.dispatch({type: 'launch-popup'});
+          AnalyticsUtil.track("Popout Button Clicked");
+        }}>
+        <OpenInNewIcon color={TAB_TEXT_COLOR_DARK_GRAY}/>
+        </IconButton>
+      }
+      </ToolbarGroup>
+    );
 
     var currentTab;
     switch(this.state.currentTabIndex) {
@@ -229,52 +259,25 @@ class App extends Component {
       );
       break;
     }
+    
+    if(!this.props.isCookiesValid) {
+      return (
+        <div style={styles.popupContainer}>
+        {renderToolbar()}
+        <div className="center-div" style={{width: '100%', fontSize: '22px', textAlign: 'center'}}>
+        <ErrorIcon color={TAB_TEXT_COLOR_DARK_GRAY} style={{width: '48px', height: '48px'}}/>
+        <p>There was a problem with your Instagram session.</p>
+        <p>Make sure you are signed into Instagram and try again.</p>
+        <RaisedButton label="Open Instagram" onClick={()=> window.open('https://www.instagram.com/')}/>
+        </div>
+        </div>
+      );
+    }
 
     return (
       <div style={styles.popupContainer}>
         <div style={styles.friendsStoriesList}>
-          <Toolbar
-            style={styles.appBar}>
-            <ToolbarGroup firstChild={true}>
-              <Avatar
-                src="../img/icon-128.png"
-                style={{backgroundColor: 'transparent', borderRadius: '0px', marginLeft: '15px'}}
-                />
-              <ListItem
-                primaryText="Chrome IG Story"
-                secondaryText="by Alec Garcia"
-                style={{paddingLeft: '10px', paddingTop: '15px', cursor: 'pointer'}}
-                onClick={()=> window.open('https://github.com/CaliAlec/ChromeIGStory')}
-                disabled={true}/>
-            </ToolbarGroup>
-            <ToolbarGroup lastChild={true}>
-              {!this.state.isSearchActive &&
-                <IconButton
-                  tooltip="Search"
-                  tooltipPosition="bottom-center"
-                  onClick={()=> {
-                    this.setState({
-                      currentStory: null,
-                      isSearchActive: true
-                    });
-                    AnalyticsUtil.track("Search Button Clicked");
-                  }}>
-                  <ActionSearchIcon color={TAB_TEXT_COLOR_DARK_GRAY}/>
-                </IconButton>
-              }
-              {!this.state.isFullPopup &&
-                <IconButton
-                  tooltip="Popout"
-                  tooltipPosition="bottom-center"
-                  onClick={()=> {
-                    this.props.dispatch({type: 'launch-popup'});
-                    AnalyticsUtil.track("Popout Button Clicked");
-                  }}>
-                  <OpenInNewIcon color={TAB_TEXT_COLOR_DARK_GRAY}/>
-                </IconButton>
-              }
-            </ToolbarGroup>
-          </Toolbar>
+          {renderToolbar(toolbarActionsGroup)}
           <div
             style={styles.tabs}
             className="tabs-container">
@@ -324,7 +327,8 @@ const mapStateToProps = (state) => {
   return {
     stories: state.stories,
     currentStoryItem: state.popup.currentStoryItem,
-    isFullPopup: state.popup.isFullPopup
+    isFullPopup: state.popup.isFullPopup,
+    isCookiesValid: state.popup.isCookiesValid
   };
 };
 

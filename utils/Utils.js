@@ -1,4 +1,7 @@
 import React from 'react';
+import {Toolbar, ToolbarGroup} from 'material-ui/Toolbar';
+import {ListItem} from 'material-ui/List';
+import Avatar from 'material-ui/Avatar';
 import JSZip from 'jszip';
 import JSZipUtils from 'jszip-utils';
 import FileSaver from 'file-saver';
@@ -154,6 +157,44 @@ function getZipFileName(trayItem) {
 // returns the name of the image/video file to add to the zip file
 function getStoryFileName(storyItem, mediaItemUrl) {
   return storyItem['id'] + (((mediaItemUrl.includes(".mp4")) ? ".mp4" : ".jpg"));
+}
+
+export function renderToolbar(additionalGroup) {
+  const styles = {
+    toolbar: {
+      backgroundColor: 'white',
+      boxShadow: '0 5px 5px -5px rgba(0, 0, 0, 0.118), 5px 0 5px -5px rgba(0, 0, 0, 0.118), -5px 0 5px -5px rgba(0, 0, 0, 0.118)',
+      flexDirection: 'row'
+    },
+    toolbarAvatar: {
+      backgroundColor: 'transparent',
+      borderRadius: '0px',
+      marginLeft: '15px'
+    },
+    toolbarListItem: {
+      paddingLeft: '10px',
+      paddingTop: '15px',
+      cursor: 'pointer'
+    }
+  }
+  return (
+    <Toolbar
+      style={styles.toolbar}>
+      <ToolbarGroup firstChild={true} style={{flexDirection: 'row'}}>
+        <Avatar
+          src={chrome.extension.getURL('img/icon-128.png')}
+          style={styles.toolbarAvatar}
+          />
+        <ListItem
+          primaryText="Chrome IG Story"
+          secondaryText="by Alec Garcia"
+          style={styles.toolbarListItem}
+          onClick={()=> window.open('https://github.com/CaliAlec/ChromeIGStory')}
+          disabled={true}/>
+      </ToolbarGroup>
+      {additionalGroup}
+    </Toolbar>
+  );
 }
 
 function renderStoryVideoItem(item) {

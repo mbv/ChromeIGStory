@@ -74,9 +74,14 @@ function launchPopup() {
 function loadCookies() {
   getCookies(function(cookies) {
     instagramCookies = cookies; 
+    instagramCookies = cookies;
     store.dispatch({
       type: 'SET_COOKIES',
       cookies: cookies
+    });
+    store.dispatch({
+      type: 'SET_COOKIES_VALID',
+      isCookiesValid: authCookiesValid()
     });
   });
 }
@@ -103,6 +108,10 @@ function sendCookies(instagramCookies) {
   chrome.tabs.query({active: true, currentWindow: true}, function(tabs) {
     chrome.tabs.sendMessage(tabs[0].id, {instagramCookies: JSON.stringify(instagramCookies)});
   });
+}
+
+function authCookiesValid() {
+  return instagramCookies.ds_user_id && instagramCookies.sessionid;
 }
 
 function applySettings() {
@@ -145,6 +154,16 @@ chrome.runtime.onMessage.addListener(
     }
   });
   
+  // listen for cookie changes so the state always has the newest cookies
+  chrome.cookies.onChanged.addListener(function(changeInfo) {
+    var cookie = changeInfo.cookie;
+    if(cookie.domain.includes('instagram.com') && changeInfo.cause === 'overwrite') {
+      if(cookie.name === 'ds_user_id' || cookie.name === 'sessionid') {
+        loadCookies();
+      }
+    }
+  });
+  
   // listen for web requests so we can cancel them if necessary
   chrome.webRequest.onBeforeRequest.addListener(
     function() {
@@ -164,7 +183,7 @@ chrome.runtime.onMessage.addListener(
       var shouldInjectHeaders = true;
       
       // // if auth cookies are missing, doesn't inject them
-      if(!(instagramCookies.ds_user_id && instagramCookies.sessionid)) {
+      if(!authCookiesValid()) {
         shouldInjectHeaders = false;
       }
       
