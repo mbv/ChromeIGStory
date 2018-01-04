@@ -40,11 +40,17 @@ class StoryTrayItem extends Component {
   onDownloadStory() {
     this.handleRightClickMenuRequestClose();
     this.setState({isDownloadingStory: true});
-    InstagramApi.getStory(this.props.storyItem.id).then(function(story) {
-      downloadStory(story, () => {
+    if(this.props.storyItem.items){
+      downloadStory(this.props.storyItem, () => {
         this.setState({isDownloadingStory: false});
       });
-    }.bind(this));
+    } else {
+      InstagramApi.getStory(this.props.storyItem.id).then(function(story) {
+        downloadStory(story, () => {
+          this.setState({isDownloadingStory: false});
+        });
+      }.bind(this));  
+    }
   }
   
   render() {
@@ -70,14 +76,20 @@ class StoryTrayItem extends Component {
     }  
     
     var seenClass = (this.props.storyItem.seen === 0) ? "unseenStoryItem" : "seenStoryItem";
-    var user, name;
+    var user, name, trayIconImageUrl;
     user = (this.props.storyItem.user) ? this.props.storyItem.user : this.props.storyItem.owner;
     name = (user.username) ? user.username : user.name;
+    trayIconImageUrl = user.profile_pic_url;
+    
+    if(this.props.storyItem.reel_type === 'highlight_reel') {
+      name = this.props.storyItem.title;
+      trayIconImageUrl = this.props.storyItem.cover_media.cropped_image_version.url;
+    }
     
     return (
       <div ref="TrayItemContainer" id={"igs_" + name} style={styles.trayItemContainer} className={(this.props.storyItem.muted) ? "mutedStoryItem" : ""}>
         {this.state.isDownloadingStory && <CircularProgress className="center-div" style={styles.storyDownloadProgressIndicator} size={90} />}
-        <img className={"trayItemImage " + seenClass} src={user.profile_pic_url} onClick={() => this.props.onViewUserStory(this.props.storyItem)}/>
+        <img className={"trayItemImage " + seenClass} src={trayIconImageUrl} onClick={() => this.props.onViewUserStory(this.props.storyItem)}/>
         <span style={styles.trayItemUsername}>{name.substr(0, 10) + (name.length > 10 ? '…' : '')}</span>
         <Popover
           open={this.state.isRightClickMenuActive}

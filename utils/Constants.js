@@ -8,6 +8,7 @@ export const LOCATION_FEED_API = FEED_API + "location/";
 export const EXPLORE_API = API_BASE + "discover/explore/";
 export const TOP_LIVE_API = API_BASE + "discover/top_live/";
 export const LIVE_API = API_BASE + "live/";
+export const HIGHLIGHTS_API = API_BASE + "highlights/";
 
 // Instagram website class names
 export const INSTAGRAM_FEED_CLASS_NAME = "_owark";

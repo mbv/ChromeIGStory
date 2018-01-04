@@ -5,6 +5,7 @@ import {Store} from 'react-chrome-redux';
 import injectTapEventPlugin from 'react-tap-event-plugin';
 import MuiThemeProvider from 'material-ui/styles/MuiThemeProvider';
 import StoriesTray from './components/app/StoriesTray';
+import HighlightsTray from './components/app/HighlightsTray';
 import StoryDownloadButton from './components/app/StoryDownloadButton';
 import AnonymousStoryViewsButton from './components/app/AnonymousStoryViewsButton';
 import UserProfileStoryItem from './components/app/UserProfileStoryItem';
@@ -165,6 +166,10 @@ function getUserStory(instagramUserImage) {
         injectUserStory(instagramUserImage, story);
       }
     });
+    InstagramApi.getHighlights(user.pk, (highlights) => {
+      console.log(highlights);
+      injectUserStoryHighlights(highlights.tray);
+    });
   });
 }
 
@@ -226,6 +231,21 @@ function injectUserStory(instagramUserImage, story) {
     <UserProfileStoryItem storyItem={story}/>
   );
   renderStoryItem(storyItemComponent, container);
+}
+
+// inject the story highlights for a particular user while on their profile page e.g. Instagram.com/username
+function injectUserStoryHighlights(highlightItems) {
+  if(!document.getElementById("story-highlights")) {
+    const anchor = document.createElement('div');
+    anchor.id = 'story-highlights';
+    var instagramFeed = document.getElementsByClassName(INSTAGRAM_NATIVE_STORIES_LIST_CONTAINER_CLASS_NAME)[0];
+    instagramFeed.insertBefore(anchor, instagramFeed.childNodes[0]);
+    
+    var storyHighlightsTrayComponent = (
+      <HighlightsTray highlightItems={highlightItems}/>
+    );
+    renderStoryItem(storyHighlightsTrayComponent, anchor);
+  }
 }
 
 // inject the story for a particular location while on its feed page e.g. Instagram.com/explore/locations/locationId

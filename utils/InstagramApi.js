@@ -5,7 +5,8 @@ import {
   LOCATION_FEED_API,
   EXPLORE_API,
   TOP_LIVE_API,
-  LIVE_API
+  LIVE_API,
+  HIGHLIGHTS_API,
 } from './Constants';
 
 import JSONbig from 'json-bigint';
@@ -13,6 +14,16 @@ import JSONbig from 'json-bigint';
 // fetch a particular user's story
 function getStory(userId, callback) {
   return fetch(`${FEED_API}user/${userId}/story/`, {
+    accept: 'application/json',
+    credentials: 'include'
+  }).then(checkStatus)
+  .then(parseJSON)
+  .then(callback);
+}
+
+// fetch a particular user's story highlights
+function getHighlights(userId, callback) {
+  return fetch(`${HIGHLIGHTS_API}${userId}/highlights_tray/`, {
     accept: 'application/json',
     credentials: 'include'
   }).then(checkStatus)
@@ -212,6 +223,7 @@ function parseJSON(response) {
 
 const InstagramApi = {
   getStory,
+  getHighlights,
   getHashtagStory,
   getLocationStory,
   getFriendStories,
