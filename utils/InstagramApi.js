@@ -7,9 +7,12 @@ import {
   TOP_LIVE_API,
   LIVE_API,
   HIGHLIGHTS_API,
+  SIG_KEY,
+  SIG_KEY_VERSION
 } from './Constants';
 
 import JSONbig from 'json-bigint';
+import hmacSHA256 from 'crypto-js/hmac-sha256';
 
 // fetch a particular user's story
 function getStory(userId, callback) {
@@ -19,6 +22,33 @@ function getStory(userId, callback) {
   }).then(checkStatus)
   .then(parseJSON)
   .then(callback);
+}
+
+// fetch the stories for particular user ids
+function getReelsMedia(userIds, callback) {
+  var requestBody = {
+    user_ids: userIds
+  };
+  
+  var params = {
+    signed_body: getSignedRequestBody(requestBody),
+    ig_sig_key_version: SIG_KEY_VERSION
+  }
+  
+  return new Promise(function(resolve, reject) {
+    fetch(`${FEED_API}reels_media/`, {
+      method: 'post',
+      credentials: 'include',
+      headers: {
+        'Content-Type': 'application/x-www-form-urlencoded'
+      },
+      body: searchParams(params)
+    })
+    .then(checkStatus)
+    .then(parseText)
+    .then(parseBigJSON)
+    .then(callback);
+  });
 }
 
 // fetch a particular user's story highlights
@@ -128,7 +158,8 @@ function getExploreFeed(callback) {
     accept: 'application/json',
     credentials: 'include'
   }).then(checkStatus)
-  .then(parseJSON)
+  .then(parseText)
+  .then(parseBigJSON)
   .then((response) => {
     return response;
   }).then(callback);
@@ -145,7 +176,8 @@ function getTopLiveVideos(callback) {
     accept: 'application/json',
     credentials: 'include'
   }).then(checkStatus)
-  .then(parseJSON)
+  .then(parseText)
+  .then(parseBigJSON)
   .then(callback);
 }
 
@@ -221,8 +253,20 @@ function parseJSON(response) {
   return response.json();
 }
 
+function getSignedRequestBody(requestBody) {
+  var signature = hmacSHA256(JSON.stringify(requestBody), SIG_KEY);
+  return signature + "." + JSON.stringify(requestBody);
+}
+
+function searchParams(params) {
+  return Object.keys(params).map((key) => {
+    return encodeURIComponent(key) + '=' + encodeURIComponent(params[key]);
+  }).join('&');
+}
+
 const InstagramApi = {
   getStory,
+  getReelsMedia,
   getHighlights,
   getHashtagStory,
   getLocationStory,

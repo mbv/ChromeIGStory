@@ -8,8 +8,9 @@ var instagramCookies = {};
 var DOMAIN_URL = "https://www.instagram.com";
 var ajaxReinject = false;
 var setting_ViewStoriesAnonymously = true;
-const X_IG_CAPABILITIES = "36oD";
-const USER_AGENT_STRING = "Instagram 10.26.0 (iPhone7,2; iOS 10_1_1; en_US; en-US; scale=2.00; gamut=normal; 750x1334) AppleWebKit/420+";
+const X_IG_CAPABILITIES = "3brTAw==";
+const USER_AGENT_STRING_ANDROID = "Instagram 10.33.0 Android (21/4.4.4; 240dpi; 480x800; Samsung Galaxy S2 - 4.4.4 - API 21 - 480x800; en_US)";
+const USER_AGENT_STRING_IOS = "Instagram 10.26.0 (iPhone7,2; iOS 10_1_1; en_US; en-US; scale=2.00; gamut=normal; 750x1334) AppleWebKit/420+";
 
 // TODO: use aliases properly
 const aliases = {
@@ -73,7 +74,6 @@ function launchPopup() {
 
 function loadCookies() {
   getCookies(function(cookies) {
-    instagramCookies = cookies; 
     instagramCookies = cookies;
     store.dispatch({
       type: 'SET_COOKIES',
@@ -208,8 +208,13 @@ chrome.runtime.onMessage.addListener(
               shouldInjectHeaders = false;
             }
           }
-          if (header.name.toLowerCase() == 'user-agent' && shouldInjectHeaders) { 
-            header.value = USER_AGENT_STRING;
+          if (header.name.toLowerCase() == 'user-agent' && shouldInjectHeaders) {
+            if(info.url.includes('reels_media')) {
+              // use Android User Agent for POST requests that are signed with the Android SIG_KEY
+              header.value = USER_AGENT_STRING_ANDROID;
+            } else {
+              header.value = USER_AGENT_STRING_IOS;
+            }
           }
           if (header.name.toLowerCase() == 'cookie' && shouldInjectHeaders) { 
             // add auth cookies to authenticate API requests

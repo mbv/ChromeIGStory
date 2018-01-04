@@ -1,5 +1,9 @@
 import getMuiTheme from 'material-ui/styles/getMuiTheme';
 
+// Instagram API POST request signing variables
+export const SIG_KEY = "0443b39a54b05f064a4917a3d1da4d6524a3fb0878eacabf1424515051674daa";
+export const SIG_KEY_VERSION = "4";
+
 // Instagram API endpoints
 export const API_BASE = "https://i.instagram.com/api/v1/";
 export const FEED_API = API_BASE + "feed/";
