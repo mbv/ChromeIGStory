@@ -35,6 +35,7 @@ export const POPUP_CONTAINER_HEIGHT = 600;
 
 export const MIXPANEL_TOKEN = null;
 export const AMPLITUDE_TOKEN = null;
+export const SENTRY_TOKEN = null;
 
 export const muiTheme = getMuiTheme({
   palette: {

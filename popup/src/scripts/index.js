@@ -3,11 +3,12 @@ import {render} from 'react-dom';
 import App from './components/app/App';
 import {Store} from 'react-chrome-redux';
 import {Provider} from 'react-redux';
+import Raven from 'raven-js';
 import injectTapEventPlugin from 'react-tap-event-plugin';
 import getMuiTheme from 'material-ui/styles/getMuiTheme'
 import MuiThemeProvider from 'material-ui/styles/MuiThemeProvider';
 import AnalyticsUtil from '../../../utils/AnalyticsUtil';
-import {muiTheme} from '../../../utils/Constants';
+import {SENTRY_TOKEN, muiTheme} from '../../../utils/Constants';
 
 const proxyStore = new Store({
   portName: 'chrome-ig-story'
@@ -16,6 +17,13 @@ const proxyStore = new Store({
 // Needed for onTouchTap
 // http://stackoverflow.com/a/34015469/988941
 injectTapEventPlugin();
+
+if(SENTRY_TOKEN !== null) {
+  Raven.config(SENTRY_TOKEN).install();
+  window.addEventListener('unhandledrejection', event => {
+    Raven.captureException(event.reason);
+  });
+}
 
 // wait for the store to connect to the background page
 proxyStore.ready().then(() => {
