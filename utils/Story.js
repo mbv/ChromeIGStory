@@ -40,7 +40,7 @@ class Story extends Component {
       var previousMedia = this.props.item.media[this.state.currentIndex];
       if(previousMedia && isVideo(previousMedia.original)) {
         var video = document.getElementById(previousMedia.id);
-        if(!video.paused) {
+        if(video && !video.paused) {
           video.pause();
         }
       }

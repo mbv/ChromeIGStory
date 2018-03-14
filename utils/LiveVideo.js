@@ -120,9 +120,11 @@ class LiveVideo extends Component {
   
   onChatMesssageAuthorUsernameClicked(index) {
     var chatMessage = this.state.chatMessagesList[index];
-    var chatMessageAuthorUsername = (this.state.isLiveVideoReplay) ? chatMessage.comment.user.username : chatMessage.user.username;
-    window.open('https://www.instagram.com/' + chatMessageAuthorUsername + '/');
-    AnalyticsUtil.track("Live Video Comment Author Username Clicked", {username: chatMessageAuthorUsername});
+    var chatMessageAuthor = (this.state.isLiveVideoReplay) ? chatMessage.comment.user : chatMessage.user;
+    if(chatMessageAuthor) {
+      window.open('https://www.instagram.com/' + chatMessageAuthor.username + '/');
+      AnalyticsUtil.track("Live Video Comment Author Username Clicked", {username: chatMessageAuthor.username});
+    }
   }
   
   onLiveVideoClicked() {
@@ -149,7 +151,7 @@ class LiveVideo extends Component {
       }.bind(this));
       
       player.on(MediaPlayerEvents.ERROR, function(error) {
-        if(error.event && error.event.includes('MEDIA_ERR_DECODE')) {
+        if(error.event && error.event.includes && error.event.includes('MEDIA_ERR_DECODE')) {
           this.setState({liveVideoPlayer: null});
           this.playLiveVideo();
         }

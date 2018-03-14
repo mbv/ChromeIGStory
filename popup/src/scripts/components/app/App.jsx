@@ -288,7 +288,7 @@ class App extends Component {
         
         <div style={styles.friendsStoryContainer}>
           {!this.props.isSearchActive && <StoryContainer isSnackbarActive={this.props.isSnackbarActive} />}
-          {this.props.isSearchActive && <SearchPage onSelectStory={(story) => this.changeStory(story)}/>}
+          {this.props.isSearchActive && <SearchPage/>}
           <Snackbar
             open={this.props.isSnackbarActive}
             autoHideDuration={3000}

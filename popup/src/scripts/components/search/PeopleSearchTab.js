@@ -71,9 +71,7 @@ class PeopleSearchTab extends Component {
             style={styles.refreshIndicator}/>
         }
 
-        <PeopleSearchList
-          results={this.state.results}
-          onSelectStory={(story) => this.props.onSelectStory(story)}/>
+        <PeopleSearchList results={this.state.results}/>
       </div>
     );
   }

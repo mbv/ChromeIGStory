@@ -41,7 +41,7 @@ class LiveFriendVideosList extends Component {
   }
   
   render() {
-    if(this.props.friendStories.broadcasts.length === 0) {
+    if(!this.props.friendStories.broadcasts || this.props.friendStories.broadcasts.length === 0) {
       return (<div></div>);
     }
     

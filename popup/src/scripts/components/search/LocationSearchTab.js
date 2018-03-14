@@ -71,9 +71,7 @@ class LocationSearchTab extends Component {
             style={styles.refreshIndicator}/>
         }
 
-        <LocationSearchList
-          results={this.state.results}
-          onSelectStory={(story) => this.props.onSelectStory(story)}/>
+        <LocationSearchList results={this.state.results}/>
       </div>
     );
   }

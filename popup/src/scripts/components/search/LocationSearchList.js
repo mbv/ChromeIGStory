@@ -58,7 +58,8 @@ class LocationSearchList extends Component {
             fetchStory(selectedResult, true, (story) => {
               this.setState({isDownloadingStory: false});
               if(!story) {
-                this.props.onSelectStory(null);
+                // show 'No Story Available' Snackbar message
+                setCurrentStoryObject(null, null);
               }
             });
           }

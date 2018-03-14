@@ -22,15 +22,6 @@ class LiveFriendVideosList extends Component {
     }
   }
   
-  handleRequestChange (event, index) {
-    var selectedStory = this.props.liveVideoItems[index];
-    this.props.onSelectStory(selectedStory);
-    this.setState({
-      selectedIndex: index,
-    });
-    AnalyticsUtil.track("Story List Item Clicked", AnalyticsUtil.getStoryObject(selectedStory));
-  }
-  
   onShareStory(index) {
     var selectedStory = this.props.liveVideoItems[index];
     AnalyticsUtil.track("Share Story", AnalyticsUtil.getStoryObject(selectedStory));

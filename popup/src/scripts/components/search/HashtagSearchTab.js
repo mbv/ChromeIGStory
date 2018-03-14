@@ -71,9 +71,7 @@ class HashtagSearchTab extends Component {
             style={styles.refreshIndicator}/>
         }
 
-        <HashtagSearchList
-          results={this.state.results}
-          onSelectStory={(story) => this.props.onSelectStory(story)}/>
+        <HashtagSearchList results={this.state.results}/>
       </div>
     );
   }

@@ -43,13 +43,9 @@ class FriendsTab extends Component {
           <LiveFriendVideoReplaysList liveVideoReplays={this.props.friendStories.post_live.post_live_items}/>
         }
         
-        <LiveFriendVideosList
-          liveVideoItems={this.props.friendStories.broadcasts}
-          onSelectStory={(story) => this.props.onSelectStory(story)}/>
+        <LiveFriendVideosList liveVideoItems={this.props.friendStories.broadcasts}/>
         
-        <FriendStoriesList
-          friendStories={this.props.friendStories}
-          onSelectStory={(story) => this.props.onSelectStory(story)}/>
+        <FriendStoriesList friendStories={this.props.friendStories}/>
       </div>
     );
   }

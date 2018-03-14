@@ -36,7 +36,7 @@ class LocationsTab extends Component {
     
     return (
       <div style={styles.container}>      
-        <LocationsList onSelectStory={(story) => this.props.onSelectStory(story)}/>
+        <LocationsList/>
       </div>
     );
   }

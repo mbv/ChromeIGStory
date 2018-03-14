@@ -195,7 +195,6 @@ class SearchPage extends Component {
               className="tabs-container">
               <Tab value={0} style={styles.tab[0]} label="People" className="tab">
                 <PeopleSearchTab
-                  onSelectStory={(story) => this.props.onSelectStory(story)}
                   searchQuery={this.state.searchQuery}
                   isFullPopup={this.state.isFullPopup}
                   />
@@ -204,7 +203,6 @@ class SearchPage extends Component {
                 label="Tags" className="tab">
                 <div>
                   <HashtagSearchTab
-                    onSelectStory={(story) => this.props.onSelectStory(story)}
                     searchQuery={this.state.searchQuery}
                     isFullPopup={this.state.isFullPopup}
                     />
@@ -214,7 +212,6 @@ class SearchPage extends Component {
                 label="Places" className="tab">
                 <div>
                   <LocationSearchTab
-                    onSelectStory={(story) => this.props.onSelectStory(story)}
                     searchQuery={this.state.searchQuery}
                     isFullPopup={this.state.isFullPopup}
                     />

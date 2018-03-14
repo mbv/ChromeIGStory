@@ -52,9 +52,7 @@ class ExploreTab extends Component {
             style={styles.refreshIndicator}/>
         }
         
-        <SuggestedStoriesList
-          stories={this.props.exploreStories}
-          onSelectStory={(story) => this.props.onSelectStory(story)}/>
+        <SuggestedStoriesList stories={this.props.exploreStories}/>
       </div>
     );
   }

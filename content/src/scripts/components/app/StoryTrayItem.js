@@ -83,7 +83,7 @@ class StoryTrayItem extends Component {
     
     if(this.props.storyItem.reel_type === 'highlight_reel') {
       name = this.props.storyItem.title;
-      trayIconImageUrl = this.props.storyItem.cover_media.cropped_image_version.url;
+      trayIconImageUrl = (this.props.storyItem.cover_media) ? this.props.storyItem.cover_media.cropped_image_version.url : this.props.storyItem.user.profile_pic_url;
     }
     
     return (
