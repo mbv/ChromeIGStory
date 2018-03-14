@@ -15,17 +15,17 @@ export const LIVE_API = API_BASE + "live/";
 export const HIGHLIGHTS_API = API_BASE + "highlights/";
 
 // Instagram website class names
+export const INSTAGRAM_MAIN_CONTAINER_CLASS_NAME = "_8fi2q";
 export const INSTAGRAM_FEED_CLASS_NAME = "_owark";
-export const INSTAGRAM_EXPLORE_FEED_CLASS_NAME = "_oyz6j";
 export const INSTAGRAM_LOCATION_FEED_CLASS_NAME = "_5b1eb";
 export const INSTAGRAM_HASHTAG_FEED_CLASS_NAME = "_j5dqo";
 export const INSTAGRAM_HASHTAG_NAME_CLASS_NAME = "_kwqc3";
-export const INSTAGRAM_USER_IMAGE_CLASS_NAME_CONTAINER = "_l8yre _qdmzb";
+export const INSTAGRAM_USER_IMAGE_CONTAINER_HOLDER_CLASS_NAME = "_b0acm";
+export const INSTAGRAM_USER_IMAGE_CONTAINER_CLASS_NAME = "_82odm";
 export const INSTAGRAM_USER_IMAGE_CLASS_NAME = "_9bt3u";
 export const INSTAGRAM_USER_USERNAME_CLASS_NAME = "_rf3jb notranslate";
 export const INSTAGRAM_NATIVE_STORIES_CONTAINER_CLASS_NAME = "_11dqz";
 export const INSTAGRAM_NATIVE_STORIES_LIST_CONTAINER_CLASS_NAME = "_havey";
-export const INSTAGRAM_STORIES_USER_HEADER_CONTAINER = "_ikq0n";
 
 // UI colors
 export const TAB_TEXT_COLOR_GREEN = "#5DBA99";
@@ -38,9 +38,9 @@ export const TAB_CONTAINER_HEIGHT = 490;
 export const POPUP_CONTAINER_WIDTH = 800;
 export const POPUP_CONTAINER_HEIGHT = 600;
 
+export const SENTRY_TOKEN = null;
 export const MIXPANEL_TOKEN = null;
 export const AMPLITUDE_TOKEN = null;
-export const SENTRY_TOKEN = null;
 
 export const muiTheme = getMuiTheme({
   palette: {

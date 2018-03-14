@@ -9,6 +9,7 @@ import ShareIcon from 'material-ui/svg-icons/social/share';
 import CircularProgress from 'material-ui/CircularProgress';
 import {fetchStory, getTimeElapsed} from '../../../../../utils/Utils';
 import AnalyticsUtil from '../../../../../utils/AnalyticsUtil';
+import {setCurrentStoryObject} from '../../utils/PopupUtils';
 
 let SelectableList = makeSelectable(List);
 
@@ -24,8 +25,8 @@ class SuggestedStoriesList extends Component {
   
   handleRequestChange (event, index) {
     var selectedStory = this.props.stories.tray[index];
-    fetchStory(selectedStory, false, (storySlide) => {
-      this.props.onSelectStory(storySlide);
+    fetchStory(selectedStory, false, (story) => {
+      setCurrentStoryObject('USER_STORY', story);
     });
     this.setState({
       selectedIndex: index,

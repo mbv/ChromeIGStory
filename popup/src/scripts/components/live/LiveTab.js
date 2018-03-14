@@ -4,6 +4,7 @@ import {GridList, GridTile} from 'material-ui/GridList';
 import Subheader from 'material-ui/Subheader';
 import VisibilityIcon from 'material-ui/svg-icons/action/visibility';
 import AnalyticsUtil from '../../../../../utils/AnalyticsUtil';
+import {setCurrentStoryObject} from '../../utils/PopupUtils';
 import $ from 'jquery';
 
 import {TAB_CONTAINER_HEIGHT} from '../../../../../utils/Constants';
@@ -29,7 +30,7 @@ class LiveTab extends Component {
   
   selectLiveVideo(index) {
     var selectedLiveVideo = this.props.topLiveVideos[index];
-    this.props.onSelectStory(selectedLiveVideo);
+    setCurrentStoryObject('LIVE', {broadcast: selectedLiveVideo});
     AnalyticsUtil.track("Live Video Item Clicked", AnalyticsUtil.getLiveVideoObject(selectedLiveVideo));
   }
   

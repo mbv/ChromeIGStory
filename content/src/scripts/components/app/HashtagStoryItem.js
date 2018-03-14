@@ -4,20 +4,16 @@ import Menu from 'material-ui/Menu';
 import MenuItem from 'material-ui/MenuItem';
 import CircularProgress from 'material-ui/CircularProgress';
 import DownloadIcon from 'material-ui/svg-icons/file/file-download';
-import StoryGallery from './StoryGallery';
 import {downloadStory} from '../../../../../utils/Utils';
-import {getStoryGalleryItems} from '../../utils/ContentUtils';
+import {setCurrentStoryObject} from '../../utils/ContentUtils';
 
 class HashtagStoryItem extends Component {
   constructor(props) {
     super(props);
     this.state = {
-      isStoryGalleryOpen: false,
       isDownloadingStory: false,
-      storyGalleryItems: [],
       isRightClickMenuActive: false,
-      rightClickMenuAnchor: null,
-      currentStoryGalleryType: null
+      rightClickMenuAnchor: null
     }
   }
   
@@ -35,22 +31,10 @@ class HashtagStoryItem extends Component {
     }.bind(this), false);
   }
   
-  onViewHashtagStory() {
-    var storyItems = this.props.storyItem.items;
-    var storyGalleryItemsObject = getStoryGalleryItems(storyItems);
-    this.showStoryGallery('userStory', storyGalleryItemsObject.items, this.props.storyItem, storyGalleryItemsObject.isStoryGalleryZoomEnabled);
+  onViewHashtagStory(storyItem) {
+    setCurrentStoryObject('USER_STORY', storyItem);
   }
-  
-  showStoryGallery(type, galleryItems, storyItem, isZoomEnabled) {
-    this.setState({
-      storyGalleryItems: galleryItems,
-      currentStoryGalleryItem: storyItem,
-      currentStoryGalleryType: type,
-      isStoryGalleryZoomEnabled: isZoomEnabled,
-      isStoryGalleryOpen: true
-    });
-  }
-  
+
   handleRightClickMenuRequestClose() {
     this.setState({
       isRightClickMenuActive: false,
@@ -84,13 +68,6 @@ class HashtagStoryItem extends Component {
             }}/>
         </Menu>
       </Popover>
-      <StoryGallery
-      isOpen={this.state.isStoryGalleryOpen}
-      currentItem={this.state.currentStoryGalleryItem}
-      onCloseRequest={() => this.setState({isStoryGalleryOpen: false})}
-      items={this.state.storyGalleryItems}
-      type={this.state.currentStoryGalleryType}
-      />
       </div>
     )
   }

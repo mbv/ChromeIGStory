@@ -18,16 +18,17 @@ import {BottomNavigation, BottomNavigationItem} from 'material-ui/BottomNavigati
 import CircularProgress from 'material-ui/CircularProgress';
 import Snackbar from 'material-ui/Snackbar';
 
+import StoryContainer from './StoryContainer';
 import FriendsTab from '../friends/FriendsTab';
 import ExploreTab from '../explore/ExploreTab';
 import LiveTab from '../live/LiveTab';
 import LocationsTab from '../locations/LocationsTab';
 
-import Story from './Story';
-import LiveVideo from '../live/LiveVideo';
+import Story from '../../../../../utils/Story';
+import LiveVideo from '../../../../../utils/LiveVideo';
 import SearchPage from '../search/SearchPage';
 import InstagramApi from '../../../../../utils/InstagramApi';
-import {renderToolbar, getStorySlide} from '../../../../../utils/Utils';
+import {renderToolbar} from '../../../../../utils/Utils';
 import AnalyticsUtil from '../../../../../utils/AnalyticsUtil';
 import $ from 'jquery';
 
@@ -52,9 +53,7 @@ class App extends Component {
       isFriendsTabLoading: true,
       isExploreTabLoading: true,
       isLiveTabLoading: true,
-      isFullPopup: false,
-      isSearchActive: true,
-      isSnackbarActive: false
+      isFullPopup: false
     }
   }
 
@@ -62,25 +61,17 @@ class App extends Component {
     this.setState({currentTabIndex: value});
     AnalyticsUtil.track(tabNames[value] + " Tab Selected");
   };
+  
+  setSearchActive() {
+    this.props.dispatch({
+      type: 'SET_IS_SEARCH_ACTIVE',
+      isSearchActive: true
+    });
+  }
 
   componentDidMount() {
-    if(this.props.currentStoryItem != null) {
-      /*
-      A story was selected from outside the popup, so fetch the story and
-      dispatch it to the store so we can display it in a popout
-      */
-      InstagramApi.getStory(this.props.currentStoryItem.id, (story) => {
-        getStorySlide(story, (storySlide) => {
-          this.setState({isFullPopup: true});
-          this.changeStory(storySlide);
-          this.props.dispatch({
-            type: 'SET_CURRENT_STORY_ITEM',
-            currentStoryItem: null
-          });
-        });
-      });
-    }
-
+    this.setSearchActive();
+    
     if(this.props.isFullPopup) {
       AnalyticsUtil.track("Popout Opened");
       this.setState({isFullPopup: true});
@@ -93,12 +84,39 @@ class App extends Component {
     InstagramApi.getExploreFeed((exploreStoriesResponse) => this.loadExploreStoryTray(InstagramApi.getExploreStories(exploreStoriesResponse)));
     InstagramApi.getTopLiveVideos((topLiveVideosResponse) => this.loadTopLiveVideos(topLiveVideosResponse));
   }
-
+  
   loadFriendsStoryTray(friendStoriesResponse) {
+    var unfetchedTrayItemIds = [];
+    
+    // TODO: implement functionality to fetch all stories which don't have any items
+    // friendStoriesResponse.tray.forEach(function(trayItem, index) {
+    //   var tempTrayItem = this.props.stories.friendStories.tray.find(tempTrayItem => tempTrayItem.id === trayItem.id);
+    //   if(tempTrayItem === undefined) {
+    //     unfetchedTrayItemIds.push(trayItem.id.toString());
+    //   } else {
+    //     if(!tempTrayItem.items) {
+    //       unfetchedTrayItemIds.push(tempTrayItem.id.toString());
+    //     }
+    //   }
+    // }.bind(this));  
+    
     this.props.dispatch({
       type: 'SET_FRIEND_STORIES',
       friendStories: friendStoriesResponse
     });
+    
+    // fetch all stories which dont have any items; unused for now
+    if(unfetchedTrayItemIds.length > 0) {
+      InstagramApi.getReelsMedia(unfetchedTrayItemIds, (stories) => {
+        var tempfriendStoriesResponse = friendStoriesResponse;
+        tempfriendStoriesResponse.tray = stories.reels_media;
+        this.props.dispatch({
+          type: 'SET_FRIEND_STORIES',
+          friendStories: tempfriendStoriesResponse
+        });
+      });
+    }
+
     this.setState({isFriendsTabLoading: false});
   }
 
@@ -117,37 +135,12 @@ class App extends Component {
     });
     this.setState({isLiveTabLoading: false});
   }
-
-  changeStory(storySlide) {
-    if(storySlide === null) {
-      this.setState({isSnackbarActive: true});
-    } else {
-      var story;
-      if(storySlide.broadcast_owner) {
-        story = (
-          <LiveVideo item={storySlide}/>
-        );
-      } else {
-        story = (
-          <Story item={storySlide} autoPlay={true}/>
-        );
-      }
-      this.setNewStory(story);
-    }
-  }
-
-  setNewStory(story) {
-    this.setState({
-      currentStory: null,
-      isSearchActive: false
-    });
-    setTimeout(function() {
-      this.setState({currentStory: story});
-    }.bind(this), 100);
-  }
-
+  
   handleSnackbarRequestClose() {
-    this.setState({isSnackbarActive: false});
+    this.props.dispatch({
+      type: 'SET_IS_SNACKBAR_ACTIVE',
+      isSnackbarActive: false
+    });
   }
 
   render() {
@@ -196,15 +189,12 @@ class App extends Component {
     
     const toolbarActionsGroup = (
       <ToolbarGroup lastChild={true}>
-      {!this.state.isSearchActive &&
+      {!this.props.isSearchActive &&
         <IconButton
         tooltip="Search"
         tooltipPosition="bottom-center"
         onClick={()=> {
-          this.setState({
-            currentStory: null,
-            isSearchActive: true
-          });
+          this.setSearchActive();
           AnalyticsUtil.track("Search Button Clicked");
         }}>
         <ActionSearchIcon color={TAB_TEXT_COLOR_DARK_GRAY}/>
@@ -228,34 +218,22 @@ class App extends Component {
     switch(this.state.currentTabIndex) {
       case 0:
       currentTab = (
-        <FriendsTab
-          isLoading={this.state.isFriendsTabLoading}
-          onSelectStory={(story) => this.changeStory(story)}
-          />
+        <FriendsTab isLoading={this.state.isFriendsTabLoading}/>
       );
       break;
       case 1:
       currentTab = (
-        <ExploreTab
-          isLoading={this.state.isExploreTabLoading}
-          onSelectStory={(story) => this.changeStory(story)}
-          />
+        <ExploreTab isLoading={this.state.isExploreTabLoading}/>
       );
       break;
       case 2:
       currentTab = (
-        <LiveTab
-          isLoading={this.state.isLiveTabLoading}
-          onSelectStory={(story) => this.changeStory(story)}
-          />
+        <LiveTab isLoading={this.state.isLiveTabLoading}/>
       );
       break;
       case 3:
       currentTab = (
-        <LocationsTab
-          isLoading={this.state.isLiveTabLoading}
-          onSelectStory={(story) => this.changeStory(story)}
-          />
+        <LocationsTab isLoading={this.state.isLiveTabLoading}/>
       );
       break;
     }
@@ -305,19 +283,19 @@ class App extends Component {
               onTouchTap={() => this.handleTabChange(3)}
               />
           </BottomNavigation>
-
+          
         </div>
+        
         <div style={styles.friendsStoryContainer}>
-          {this.state.currentStory != null && this.state.currentStory}
-          {this.state.isSearchActive && <SearchPage onSelectStory={(story) => this.changeStory(story)}/>}
-
+          {!this.props.isSearchActive && <StoryContainer isSnackbarActive={this.props.isSnackbarActive} />}
+          {this.props.isSearchActive && <SearchPage onSelectStory={(story) => this.changeStory(story)}/>}
           <Snackbar
-            open={this.state.isSnackbarActive}
+            open={this.props.isSnackbarActive}
             autoHideDuration={3000}
             onRequestClose={() => this.handleSnackbarRequestClose()}
             message="No story available"/>
-
         </div>
+        
       </div>
     );
   }
@@ -326,8 +304,9 @@ class App extends Component {
 const mapStateToProps = (state) => {
   return {
     stories: state.stories,
-    currentStoryItem: state.popup.currentStoryItem,
     isFullPopup: state.popup.isFullPopup,
+    isSnackbarActive: state.popup.isSnackbarActive,
+    isSearchActive: state.popup.isSearchActive,
     isCookiesValid: state.popup.isCookiesValid
   };
 };

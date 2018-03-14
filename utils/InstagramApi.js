@@ -47,7 +47,10 @@ function getReelsMedia(userIds, callback) {
     .then(checkStatus)
     .then(parseText)
     .then(parseBigJSON)
-    .then(callback);
+    .then(callback)
+    .catch(function(e) {
+      reject(e);
+    });
   });
 }
 

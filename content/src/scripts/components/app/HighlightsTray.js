@@ -4,19 +4,13 @@ import LinearProgress from 'material-ui/LinearProgress';
 import DropDownMenu from 'material-ui/DropDownMenu';
 import MenuItem from 'material-ui/MenuItem';
 import StoryTrayItem from './StoryTrayItem';
-import LiveVideoTrayItem from './LiveVideoTrayItem';
-import LiveVideoReplayTrayItem from './LiveVideoReplayTrayItem';
-import StoryGallery from './StoryGallery';
 import InstagramApi from '../../../../../utils/InstagramApi';
-import {getStoryGalleryItems} from '../../utils/ContentUtils';
+import {injectStoryContainer, setCurrentStoryObject} from '../../utils/ContentUtils';
 
 class HighlightsTray extends Component {
   constructor(props) {
     super(props);
     this.state = {
-      isStoryGalleryOpen: false,
-      currentStoryGalleryItem: null,
-      storyGalleryItems: [],
       highlightItems: this.props.highlightItems
     }
   }
@@ -37,47 +31,40 @@ class HighlightsTray extends Component {
           }
         });
         this.setState({highlightItems: tempHighlightItems});
-      });
+      }).catch(function(e) {
+        // TODO: figure out why reelsMedia API sometimes fails
+        // remove all highlights that weren't possible to fetch
+        this.setState({highlightItems: this.state.highlightItems.filter(tempHighlightItem => tempHighlightItem.items)});
+      }.bind(this));
     }
   }
   
-  showStoryGallery(storyItem) {
-    var storyGalleryItemsObject = getStoryGalleryItems(storyItem.items);
-    this.setState({
-      storyGalleryItems: storyGalleryItemsObject.items,
-      currentStoryGalleryItem: storyItem,
-      isStoryGalleryOpen: true
-    });
+  onViewUserStory(storyItem) {
+    injectStoryContainer();
+    setCurrentStoryObject('USER_STORY', storyItem);
   }
   
   render() {
     const highlightTrayItems = this.state.highlightItems.map((storyTrayItem, key) => {
       return (
         <StoryTrayItem
-        key={key}
-        trayItemIndex={key}
-        storyItem={storyTrayItem}
-        onViewUserStory={(storyItem) => this.showStoryGallery(storyItem)}
-        />
+          key={key}
+          trayItemIndex={key}
+          storyItem={storyTrayItem}
+          onViewUserStory={(storyItem) => this.onViewUserStory(storyItem)}
+          />
       )
     });
     
     return (
       <div>
-      <div className="trayContainer">
-      {highlightTrayItems}
-      </div>
-      <div className="trayContainerEdgeFade"></div>
-      <StoryGallery
-      isOpen={this.state.isStoryGalleryOpen}
-      currentItem={this.state.currentStoryGalleryItem}
-      onCloseRequest={() => this.setState({isStoryGalleryOpen: false})}
-      type={'userStory'}
-      items={this.state.storyGalleryItems}
-      />
+        <div className="trayContainer">
+          {highlightTrayItems}
+        </div>
+        <div className="trayContainerEdgeFade"></div>
       </div>
     )
   }
 }
 
-export default HighlightsTray;
+export default connect(null)(HighlightsTray);

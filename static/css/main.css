@@ -32,6 +32,52 @@
   box-shadow: 0 0 0 4px #fff;
 }
 
+.content-story-pane {
+  width: 53vh;
+  margin-top: 2px;
+  position: fixed;
+}
+
+.content-story-pane .image-gallery-slide img.story-media-item, .content-story-pane .image-gallery-slide video.story-media-item {
+  height: 91vh !important;
+}
+
+.popup-story-pane .image-gallery-slide img.story-media-item, .popup-story-pane .image-gallery-slide video.story-media-item {
+  height: 100vh !important;
+  object-fit: contain !important;
+}
+
+.image-gallery-content.fullscreen .story-media-item {
+  height: 100vh !important;
+  object-fit: contain !important;
+}
+
+.story-user-image-click-jacker {
+  position: absolute !important;
+  width: 170px;
+  height: 170px;
+  z-index: 1;
+  margin-top: -9px;
+  cursor: pointer;
+}
+
+.story-media-item {
+  width: 100% !important;
+  object-fit: cover !important;
+}
+
+.view-additional-story-button {
+  flex-direction: row !important;
+  margin-top: 20px !important;
+  cursor: pointer !important;
+}
+
+.view-additional-story-button-image {
+  object-fit: scale-down !important;
+  background-color: transparent !important;
+  margin-left: 10px !important;
+}
+
 .storyAuthorImage {
   width: 32px;
   height: 32px;
@@ -44,6 +90,24 @@
   left: 110px;
   color: white;
   z-index: 1;
+}
+
+.story-arrow-left, .story-arrow-right {
+  top: 50%;
+  transform: translateY(-50%);
+  cursor: pointer;
+  position: absolute;
+  z-index: 1;
+  padding: 50px 15px;
+  filter: drop-shadow(3px 5px 10px rgba(0,0,0,0.9));
+}
+
+.story-arrow-left {
+  left: 0px;
+}
+
+.story-arrow-right {
+  right: 0px;
 }
 
 .videoStoryItem {
@@ -290,7 +354,6 @@
   position: absolute;
   width: 100%;
   height: 200px;
-  bottom: 43px;
 }
 
 #chatmessage {
@@ -318,6 +381,14 @@
 
 .tabs-container .tab > div > div svg {
   fill: #626262 !important;
+}
+
+.image-gallery-fullscreen-button {
+  font-size: 10px;
+}
+
+.image-gallery-slide {
+  z-index: 0 !important;
 }
 
 .liveVideoReplayIconTray {

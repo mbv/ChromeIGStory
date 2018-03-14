@@ -10,8 +10,9 @@ import MoreVertIcon from 'material-ui/svg-icons/navigation/more-vert';
 import DownloadIcon from 'material-ui/svg-icons/file/file-download';
 import ShareIcon from 'material-ui/svg-icons/social/share';
 
-import LiveVideo from '../live/LiveVideo';
+import LiveVideo from '../../../../../utils/LiveVideo';
 import AnalyticsUtil from '../../../../../utils/AnalyticsUtil';
+import {setCurrentStoryObject} from '../../utils/PopupUtils';
 import {getStorySlide} from '../../../../../utils/Utils';
 
 let SelectableList = makeSelectable(List);
@@ -26,7 +27,7 @@ class LiveFriendVideosList extends Component {
   
   handleRequestChange (event, index) {
     var selectedStory = this.props.friendStories.broadcasts[index];
-    this.props.onSelectStory(selectedStory);
+    setCurrentStoryObject('LIVE', {broadcast: selectedStory});
     this.setState({
       selectedIndex: index,
     });

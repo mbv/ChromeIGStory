@@ -2,10 +2,9 @@ import React, { Component } from 'react';
 import Dialog from 'material-ui/Dialog';
 import FlatButton from 'material-ui/FlatButton';
 import {Card, CardActions, CardHeader, CardMedia} from 'material-ui/Card';
-import {getTimeElapsed, getLiveVideoMp4VideoUrl, getLiveVideoMp4AudioUrl} from '../../../../../utils/Utils';
+import {getTimeElapsed, getLiveVideoMp4VideoUrl, getLiveVideoMp4AudioUrl} from './Utils';
 
 class LiveVideoReplayDownloadDialog extends Component {
-  
   render() {
     const liveVideoDownloadCards = this.props.liveVideoReplays.map((liveVideoItem, key) => {
       return (
@@ -19,7 +18,7 @@ class LiveVideoReplayDownloadDialog extends Component {
           <CardMedia>
             <img src={liveVideoItem.cover_frame_url} alt="" style={{height: '250px', objectFit: 'contain'}}/>
           </CardMedia>
-          <CardActions>
+          <CardActions style={{flexDirection: 'row'}}>
             <FlatButton label="Open Audio URL" onClick={() => {
                 var selectedStory = this.props.liveVideoReplays[key];
                 getLiveVideoMp4AudioUrl(selectedStory.dash_manifest, (videoUrl) => {

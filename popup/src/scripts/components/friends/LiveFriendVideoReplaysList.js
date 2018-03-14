@@ -11,10 +11,11 @@ import DownloadIcon from 'material-ui/svg-icons/file/file-download';
 import ShareIcon from 'material-ui/svg-icons/social/share';
 import VideoLibraryIcon from 'material-ui/svg-icons/av/video-library';
 import MusicLibraryIcon from 'material-ui/svg-icons/av/library-music';
-import LiveVideo from '../live/LiveVideo';
+import LiveVideo from '../../../../../utils/LiveVideo';
 import {getTimeElapsed} from '../../../../../utils/Utils';
+import {setCurrentStoryObject} from '../../utils/PopupUtils';
 import AnalyticsUtil from '../../../../../utils/AnalyticsUtil';
-import LiveVideoReplayDownloadDialog from './LiveVideoReplayDownloadDialog';
+import LiveVideoReplayDownloadDialog from '../../../../../utils/LiveVideoReplayDownloadDialog';
 
 let SelectableList = makeSelectable(List);
 
@@ -29,8 +30,8 @@ class LiveFriendVideoReplaysList extends Component {
   }
   
   handleRequestChange (event, index) {
-    var selectedStory = this.props.friendStories.post_live.post_live_items[index].broadcasts[0];
-    this.props.onSelectStory(selectedStory);
+    var selectedStory = this.props.friendStories.post_live.post_live_items[index];
+    setCurrentStoryObject('LIVE_REPLAY', {post_live_item: selectedStory});
     this.setState({
       selectedIndex: index,
     });

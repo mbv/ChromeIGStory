@@ -10,6 +10,7 @@ import CircularProgress from 'material-ui/CircularProgress';
 import InstagramApi from '../../../../../utils/InstagramApi';
 import {downloadStory, getStorySlide, getTimeElapsed} from '../../../../../utils/Utils';
 import AnalyticsUtil from '../../../../../utils/AnalyticsUtil';
+import {setCurrentStoryObject} from '../../utils/PopupUtils';
 import {countriesList} from '../../../../../static/js/locationData.js'
 
 let SelectableList = makeSelectable(List);
@@ -33,14 +34,10 @@ class LocationsList extends Component {
   
   handleRequestChange (event, index) {
     InstagramApi.getLocationStory(this.state.stories[index].locationId, (story) => {
-      if(story) {
-        getStorySlide(story, (storySlide) => this.props.onSelectStory(storySlide));
-        this.setState({
-          selectedIndex: index,
-        });
-      } else {
-        this.props.onSelectStory(null);
-      }
+      setCurrentStoryObject('USER_STORY', story);
+      this.setState({
+        selectedIndex: index,
+      });
     });
   }
   
@@ -54,7 +51,7 @@ class LocationsList extends Component {
         if(story) {
           downloadStory(story, () => this.setState({isDownloadingStory: false}));
         } else {
-          this.props.onSelectStory(null);
+          setCurrentStoryObject('USER_STORY', null);
           this.setState({isDownloadingStory: false});
         }
       });

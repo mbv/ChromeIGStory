@@ -1,45 +1,48 @@
 import React from 'react';
-import StoryGalleryVideo from '../components/app/StoryGalleryVideo';
-import StoryGalleryLiveVideo from '../components/app/StoryGalleryLiveVideo';
+import {render} from 'react-dom';
+import {Provider} from 'react-redux';
+import {proxyStore} from '../index.js';
+import MuiThemeProvider from 'material-ui/styles/MuiThemeProvider';
+import StoryContainer from '../components/app/StoryContainer';
+import {
+  INSTAGRAM_MAIN_CONTAINER_CLASS_NAME,
+  muiTheme
+} from '../../../../utils/Constants';
 
-// returns the "items" array the StoryGallery uses to display a story
-export function getStoryGalleryItems(storyItems) {
-  var items = [];
-  var isStoryGalleryZoomEnabled = true;
-  if(storyItems.dash_abr_playback_url) {
-    var storyGalleryLiveVideo = (
-      <StoryGalleryLiveVideo autoPlay={true} isLiveVideoReplay={false} liveItem={storyItems}/>
+export function setCurrentStoryObject(type, story) {
+  proxyStore.dispatch({
+    type: 'SET_CURRENT_CONTENT_STORY_OBJECT',
+    currentStoryObject: {
+      type: type,
+      story: story
+    }
+  });
+}
+
+export function injectStoryContainer() {
+  if(!document.getElementById("storyPaneContainer")) {
+    var storyContainerComponent = (
+      <StoryContainer/>
     );
-    items.push(storyGalleryLiveVideo);
-    isStoryGalleryZoomEnabled = false;
-  } else {
-    storyItems.map((storyItem, i) => {
-      if(storyItem.dash_manifest) {
-        var storyGalleryLiveVideoReplay = (
-          <StoryGalleryLiveVideo autoPlay={(i === 0) ? true : false} liveItem={storyItem} isLiveVideoReplay={true}/>
-        );
-        items.push(storyGalleryLiveVideoReplay);
-        isStoryGalleryZoomEnabled = false;
-      } else {
-        if(storyItem.video_versions) {
-          var video = storyItem.video_versions[0];
-          var storyGalleryVideo = (
-            <StoryGalleryVideo autoPlay={(i === 0) ? true : false} id={storyItem.id} src={video.url}/>
-          );
-          items.push(storyGalleryVideo);
-        } else {
-          var image = storyItem.image_versions2.candidates[0];
-          var url = image.url.replace("http://", "https://");
-          items.push(url);
-        }
-        if(storyItems[0] && storyItems[0].video_versions) {
-          isStoryGalleryZoomEnabled = false;
-        }
-      }
-    });
+    
+    var mainContainer = document.getElementsByClassName(INSTAGRAM_MAIN_CONTAINER_CLASS_NAME)[0];
+    mainContainer.style.flexDirection = 'row';
+    
+    var storyPaneContainer = document.createElement('div');
+    storyPaneContainer.id = "storyPaneContainer";
+    storyPaneContainer.style.width = '53vh';
+    
+    mainContainer.insertBefore(storyPaneContainer, mainContainer.childNodes[0]);
+    renderStoryItem(storyContainerComponent, storyPaneContainer);
   }
-  return {
-    items: items,
-    isStoryGalleryZoomEnabled: isStoryGalleryZoomEnabled
-  }
+}
+
+export function renderStoryItem(storyItemComponent, container) {
+  render(
+    <Provider store={proxyStore}>
+      <MuiThemeProvider muiTheme={muiTheme}>
+        {storyItemComponent}
+      </MuiThemeProvider>  
+    </Provider>, container
+  );
 }

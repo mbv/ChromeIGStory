@@ -17,30 +17,23 @@ export function getStorySlide(story, callback) {
   var items = (story.reel) ? story.reel.items : story.items;
   const storyMedia = items.map((media, key) => {
     const url = getMediaItemUrl(media);
-    if(isVideo(url)){
-      return {
-        id: media.id,
-        index: key,
-        original: url,
-        renderItem: renderStoryVideoItem
-      };
-    } else {
-      return {
-        id: media.id,
-        index: key,
-        original: url,
-        renderItem: renderStoryImage
-      };
-    }
+    return {
+      id: media.id,
+      index: key,
+      original: url
+    };
   });
-
+  
   var storySlide = {
-    key: story.id,
+    key: (story.reel) ? story.reel.id : story.id,
     media: storyMedia,
     story: story
   };
-
-  callback(storySlide);
+  
+  if(callback) {
+    callback(storySlide);
+  }
+  return storySlide;
 }
 
 // returns the correct "user" object from a story API response
@@ -64,7 +57,7 @@ export function fetchStory(selectedStory, shouldDownload, callback) {
         if(shouldDownload) {
           downloadStory(story, () => callback(true));
         } else {
-          getStorySlide(story, (storySlide) => callback(storySlide));
+          callback(story)
         }
       } else {
         callback(null);
@@ -72,12 +65,11 @@ export function fetchStory(selectedStory, shouldDownload, callback) {
     });
   } else if(selectedStory.name) {
     InstagramApi.getHashtagStory(selectedStory.name, (story) => {
-      console.log(story);
       if(story) {
         if(shouldDownload) {
           downloadStory(story, () => callback(true));
         } else {
-          getStorySlide(story, (storySlide) => callback(storySlide));
+          callback(story)
         }
       } else {
         callback(null);
@@ -89,12 +81,27 @@ export function fetchStory(selectedStory, shouldDownload, callback) {
         if(shouldDownload) {
           downloadStory(story, () => callback(true));
         } else {
-          getStorySlide(story, (storySlide) => callback(storySlide));
+          callback(story)
         }
       } else {
         callback(null);
       }
     });
+  }
+}
+
+// opens a new window with the correct URL for the story author's page
+export function onStoryAuthorUsernameClicked(storyItem) {
+  if(storyItem.user || storyItem.broadcast_owner) {
+    const user = (storyItem.user) ? storyItem.user : storyItem.broadcast_owner;
+    window.open('https://www.instagram.com/' + user.username + '/');
+  } else {
+    const owner = storyItem.owner;
+    if(owner.type === 'location') {
+      window.open('https://www.instagram.com/explore/locations/' + owner.pk + '/');
+    } else if (owner.type === 'tag') {
+      window.open('https://www.instagram.com/explore/tags/' + owner.pk + '/');
+    }
   }
 }
 
@@ -174,6 +181,11 @@ export function renderToolbar(additionalGroup) {
     toolbarListItem: {
       paddingLeft: '10px',
       paddingTop: '15px',
+    },
+    toolbarSecondaryText: {
+      fontSize: '14px',
+      marginTop: '4px',
+      color: '#0000008a',
       cursor: 'pointer'
     }
   }
@@ -186,11 +198,11 @@ export function renderToolbar(additionalGroup) {
           style={styles.toolbarAvatar}
           />
         <ListItem
-          primaryText="Chrome IG Story"
-          secondaryText="by Alec Garcia"
+          primaryText={<div style={{cursor: 'pointer'}} onClick={()=> window.open('https://github.com/CaliAlec/ChromeIGStory')}>Chrome IG Story</div>}
+          secondaryText={<div style={styles.toolbarSecondaryText} onClick={()=> window.open('http://alecgarcia.me/')}>by Alec Garcia</div>}
           style={styles.toolbarListItem}
-          onClick={()=> window.open('https://github.com/CaliAlec/ChromeIGStory')}
-          disabled={true}/>
+          disabled={true}
+          />
       </ToolbarGroup>
       {additionalGroup}
     </Toolbar>
@@ -201,7 +213,7 @@ function renderStoryVideoItem(item) {
   return (
     <div>
       <video
-        style={{width: '100%'}}
+        className="story-media-item"
         id={item.id}
         src={item.original}
         preload="metadata"
@@ -214,7 +226,7 @@ function renderStoryImage(item) {
   return (
     <div>
       <img
-        style={{width: '100%'}}
+        className="story-media-item"
         src={item.original}
         />
     </div>
@@ -263,6 +275,14 @@ export function getMediaItemUrl(storyItem) {
   } else {
     mediaItem = storyItem['image_versions2']['candidates'][0];
   }
+  var secureUrl = mediaItem['url'].replace("http://", "https://");
+  return secureUrl;
+}
+
+
+// returns a thumbnail image for a story
+export function getStoryCoverImage(storyItem) {
+  var mediaItem = storyItem['image_versions2']['candidates'][0];
   var secureUrl = mediaItem['url'].replace("http://", "https://");
   return secureUrl;
 }

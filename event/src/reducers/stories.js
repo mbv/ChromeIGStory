@@ -8,9 +8,7 @@ const initialState = {
     top_live: []
   },
   locationStories: [],
-  topLiveVideos: [],
-  currentStoryId: null,
-  currentStoryItem: null
+  topLiveVideos: []
 };
 
 export default (state = initialState, action) => {

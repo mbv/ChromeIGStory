@@ -10,7 +10,8 @@ import ShareIcon from 'material-ui/svg-icons/social/share';
 import CircularProgress from 'material-ui/CircularProgress';
 import {fetchStory, getTimeElapsed} from '../../../../../utils/Utils';
 import AnalyticsUtil from '../../../../../utils/AnalyticsUtil';
-
+import InstagramApi from '../../../../../utils/InstagramApi';
+import {setCurrentStoryObject} from '../../utils/PopupUtils';
 let SelectableList = makeSelectable(List);
 
 class FriendStoriesList extends Component {
@@ -25,9 +26,20 @@ class FriendStoriesList extends Component {
   
   handleRequestChange (event, index) {
     var selectedStory = this.props.friendStories.tray[index];
-    fetchStory(selectedStory, false, (storySlide) => {
-      this.props.onSelectStory(storySlide);
-    });
+    if(selectedStory.items && selectedStory.items.length > 0) {
+      setCurrentStoryObject('USER_STORY', selectedStory);
+    } else {
+      fetchStory(selectedStory, false, (story) => {
+        var friendStories = this.props.friendStories;
+        const index = friendStories.tray.findIndex(storyItem => storyItem.id === selectedStory.id);
+        friendStories.tray[index].items = story.reel.items;
+        this.props.dispatch({
+          type: 'SET_FRIEND_STORIES',
+          friendStories: friendStories
+        });
+        setCurrentStoryObject('USER_STORY', story);
+      });
+    }
     this.setState({
       selectedIndex: index,
     });
@@ -100,8 +112,7 @@ class FriendStoriesList extends Component {
 
 const mapStateToProps = (state) => {
   return {
-    friendStories: state.stories.friendStories,
-    currentStoryId: state.stories.currentStoryId
+    friendStories: state.stories.friendStories
   };
 };
 

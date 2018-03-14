@@ -10,7 +10,7 @@ import MuiThemeProvider from 'material-ui/styles/MuiThemeProvider';
 import AnalyticsUtil from '../../../utils/AnalyticsUtil';
 import {SENTRY_TOKEN, muiTheme} from '../../../utils/Constants';
 
-const proxyStore = new Store({
+export const proxyStore = new Store({
   portName: 'chrome-ig-story'
 });
 

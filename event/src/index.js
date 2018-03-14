@@ -14,19 +14,6 @@ const USER_AGENT_STRING_IOS = "Instagram 10.26.0 (iPhone7,2; iOS 10_1_1; en_US; 
 
 // TODO: use aliases properly
 const aliases = {
-  'story-clicked-alias': (originalAction) => {
-    
-    store.dispatch({
-      type: 'SET_CURRENT_STORY_ITEM',
-      currentStoryItem: originalAction.currentStoryItem
-    });
-    
-    launchPopup();
-    
-    return {
-      type: 'story-clicked-alias'
-    };
-  },
   'launch-popup': (originalAction) => {
     
     store.dispatch({

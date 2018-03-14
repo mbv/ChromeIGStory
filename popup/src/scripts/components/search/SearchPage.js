@@ -5,7 +5,6 @@ import TextField from 'material-ui/TextField';
 import ActionSearchIcon from 'material-ui/svg-icons/action/search';
 import NavigationArrowBackIcon from 'material-ui/svg-icons/navigation/arrow-back';
 import NavigationCloseIcon from 'material-ui/svg-icons/navigation/close';
-import MapIcon from 'material-ui/svg-icons/maps/map';
 import RaisedButton from 'material-ui/RaisedButton';
 import FlatButton from 'material-ui/FlatButton';
 import IconButton from 'material-ui/IconButton';
@@ -119,11 +118,6 @@ class SearchPage extends Component {
         searchQuery: this.refs.searchQuery.getValue()
       });
     }
-  }
-  
-  onViewStoryMap() {
-    AnalyticsUtil.track("View Story Map Button Clicked");
-    window.open('https://watchmatcha.com/');
   }
 
   render() {
@@ -248,14 +242,7 @@ class SearchPage extends Component {
                 onClick={(e) => this.handleSplashSearch(e)}
                 />
             </Paper>
-            
-            <RaisedButton
-              label="View Story Map"
-              className="center-horizontal"
-              style={{marginTop: '20px'}}
-              icon={<MapIcon />}
-              onClick={() => this.onViewStoryMap()}
-              />
+
           </div>
         }
       </div>

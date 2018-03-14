@@ -7,6 +7,7 @@ import DownloadIcon from 'material-ui/svg-icons/file/file-download';
 import CircularProgress from 'material-ui/CircularProgress';
 import InstagramApi from '../../../../../utils/InstagramApi';
 import {fetchStory} from '../../../../../utils/Utils';
+import {setCurrentStoryObject} from '../../utils/PopupUtils';
 import AnalyticsUtil from '../../../../../utils/AnalyticsUtil';
 
 let SelectableList = makeSelectable(List);
@@ -23,8 +24,8 @@ class HashtagSearchList extends Component {
 
   handleRequestChange (event, index) {
     var selectedResult = this.props.results[index];
-    fetchStory(selectedResult, false, (storySlide) => {
-      this.props.onSelectStory(storySlide);
+    fetchStory(selectedResult, false, (story) => {
+      setCurrentStoryObject('USER_STORY', story);
     });
     this.setState({
       selectedIndex: index,
