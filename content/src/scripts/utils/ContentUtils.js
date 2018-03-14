@@ -6,6 +6,9 @@ import MuiThemeProvider from 'material-ui/styles/MuiThemeProvider';
 import StoryContainer from '../components/app/StoryContainer';
 import {
   INSTAGRAM_MAIN_CONTAINER_CLASS_NAME,
+  INSTAGRAM_PROFILE_ARTICLE_CONTAINER_CLASS_NAME,
+  INSTAGRAM_HASHTAG_ARTICLE_CONTAINER_CLASS_NAME,
+  INSTAGRAM_LOCATION_ARTICLE_CONTAINER_CLASS_NAME,
   muiTheme
 } from '../../../../utils/Constants';
 
@@ -27,6 +30,15 @@ export function injectStoryContainer() {
     
     var mainContainer = document.getElementsByClassName(INSTAGRAM_MAIN_CONTAINER_CLASS_NAME)[0];
     mainContainer.style.flexDirection = 'row';
+    
+    var profileArticleContainer = document.getElementsByClassName(INSTAGRAM_PROFILE_ARTICLE_CONTAINER_CLASS_NAME)[0];
+    var hashtagArticleContainer = document.getElementsByClassName(INSTAGRAM_HASHTAG_ARTICLE_CONTAINER_CLASS_NAME)[0];
+    var locationArticleContainer = document.getElementsByClassName(INSTAGRAM_LOCATION_ARTICLE_CONTAINER_CLASS_NAME)[0];
+    var articleWidth = 'calc(60% - 40px)';
+    
+    if(profileArticleContainer) { profileArticleContainer.style.width = articleWidth; }
+    if(hashtagArticleContainer) { hashtagArticleContainer.style.width = articleWidth; }
+    if(locationArticleContainer) { locationArticleContainer.style.width = articleWidth; }
     
     var storyPaneContainer = document.createElement('div');
     storyPaneContainer.id = "storyPaneContainer";

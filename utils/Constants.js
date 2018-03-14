@@ -16,6 +16,10 @@ export const HIGHLIGHTS_API = API_BASE + "highlights/";
 
 // Instagram website class names
 export const INSTAGRAM_MAIN_CONTAINER_CLASS_NAME = "_8fi2q";
+export const INSTAGRAM_PROFILE_ARTICLE_CONTAINER_CLASS_NAME = "_mesn5";
+export const INSTAGRAM_HASHTAG_ARTICLE_CONTAINER_CLASS_NAME = "_jzhdd";
+export const INSTAGRAM_LOCATION_ARTICLE_CONTAINER_CLASS_NAME = "_m558i";
+
 export const INSTAGRAM_FEED_CLASS_NAME = "_owark";
 export const INSTAGRAM_LOCATION_FEED_CLASS_NAME = "_5b1eb";
 export const INSTAGRAM_HASHTAG_FEED_CLASS_NAME = "_j5dqo";
