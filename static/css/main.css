@@ -194,9 +194,9 @@
 }
 
 .trayContainer {
+  background: white;
   display: block;
   text-align: center;
-  margin-bottom: 20px;
   max-height: 145px;
   overflow-x: auto;
   overflow-y: hidden;
@@ -394,7 +394,6 @@
 .liveVideoReplayIconTray {
   height: 20px;
   margin-top: 35px;
-  z-index: 3
 }
 
 .liveVideoReplayIconUser {
@@ -422,7 +421,7 @@
 
 .liveTrayItemIcon, .liveUserItemIcon{
   border-radius: 50%;
-  z-index: 2
+  z-index: 1
 }
 
 @media screen and (max-width: 735px) {

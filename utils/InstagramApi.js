@@ -205,7 +205,8 @@ function getLiveVideoReplayComments(id, timestamp, callback) {
     accept: 'application/json',
     credentials: 'include'
   }).then(checkStatus)
-  .then(parseJSON)
+  .then(parseText)
+  .then(parseBigJSON)
   .then(callback);
 }
 
@@ -215,7 +216,8 @@ function getLiveVideoInfo(id, callback) {
     accept: 'application/json',
     credentials: 'include'
   }).then(checkStatus)
-  .then(parseJSON)
+  .then(parseText)
+  .then(parseBigJSON)
   .then(callback);
 }
 

@@ -4,6 +4,7 @@ import {Provider} from 'react-redux';
 import {proxyStore} from '../index.js';
 import MuiThemeProvider from 'material-ui/styles/MuiThemeProvider';
 import StoryContainer from '../components/app/StoryContainer';
+import StoryModal from '../components/app/StoryModal';
 import {
   INSTAGRAM_MAIN_CONTAINER_CLASS_NAME,
   INSTAGRAM_PROFILE_ARTICLE_CONTAINER_CLASS_NAME,
@@ -13,13 +14,46 @@ import {
 } from '../../../../utils/Constants';
 
 export function setCurrentStoryObject(type, story) {
+  if(story) {
+    injectStoryModal();
+    openStoryModal();
+    proxyStore.dispatch({
+      type: 'SET_CURRENT_CONTENT_STORY_OBJECT',
+      currentStoryObject: {
+        type: type,
+        story: story
+      }
+    });
+  }
+}
+
+export function openStoryModal() {
   proxyStore.dispatch({
-    type: 'SET_CURRENT_CONTENT_STORY_OBJECT',
-    currentStoryObject: {
-      type: type,
-      story: story
-    }
+    type: 'SET_IS_STORY_MODAL_OPEN',
+    isStoryModalOpen: true
   });
+}
+
+export function closeStoryModal() {
+  proxyStore.dispatch({
+    type: 'SET_IS_STORY_MODAL_OPEN',
+    isStoryModalOpen: false
+  });
+}
+
+export function injectStoryModal() {
+  if(!document.getElementById("storyModalContainer")) {
+    document.getElementById("storyModalContainer");
+    var storyModal = (
+      <StoryModal/>
+    );
+    
+    var storyModalContainer = document.createElement('div');
+    storyModalContainer.id = "storyModalContainer";
+    
+    document.body.appendChild(storyModalContainer);
+    renderStoryItem(storyModal, storyModalContainer);
+  }
 }
 
 export function injectStoryContainer() {

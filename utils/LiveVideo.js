@@ -35,7 +35,7 @@ class LiveVideo extends Component {
   }
   
   componentWillReceiveProps(nextProps) {
-    if(nextProps.liveItem.id !== this.state.liveItem.id) {
+    if(nextProps.liveItem.id != this.state.liveItem.id) {
       this.pauseLiveVideo();
       if(this.state.liveVideoPlayer !== null) {
         this.state.liveVideoPlayer.reset();

@@ -1,5 +1,6 @@
 const initialState = {
-  currentStoryObject: null
+  currentStoryObject: null,
+  isStoryModalOpen: false,
 };
 
 export default (state = initialState, action) => {
@@ -8,6 +9,11 @@ export default (state = initialState, action) => {
     return {
       ...state,
       currentStoryObject: action.currentStoryObject
+    }
+    case 'SET_IS_STORY_MODAL_OPEN':
+    return {
+      ...state,
+      isStoryModalOpen: action.isStoryModalOpen
     }
     default:
     return state;

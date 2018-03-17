@@ -5,7 +5,7 @@ import DropDownMenu from 'material-ui/DropDownMenu';
 import MenuItem from 'material-ui/MenuItem';
 import StoryTrayItem from './StoryTrayItem';
 import InstagramApi from '../../../../../utils/InstagramApi';
-import {injectStoryContainer, setCurrentStoryObject} from '../../utils/ContentUtils';
+import {setCurrentStoryObject} from '../../utils/ContentUtils';
 
 class HighlightsTray extends Component {
   constructor(props) {
@@ -40,7 +40,6 @@ class HighlightsTray extends Component {
   }
   
   onViewUserStory(storyItem) {
-    injectStoryContainer();
     setCurrentStoryObject('USER_STORY', storyItem);
   }
   

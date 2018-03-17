@@ -48,7 +48,7 @@ class StoryContainer extends Component {
   
   render() {
     return (
-      <div className="content-story-pane">
+      <div>
         {this.state.currentStoryComponent}
       </div>
     )

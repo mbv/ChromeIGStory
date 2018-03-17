@@ -7,6 +7,7 @@ import Raven from 'raven-js';
 import MuiThemeProvider from 'material-ui/styles/MuiThemeProvider';
 import Chip from 'material-ui/Chip';
 import Avatar from 'material-ui/Avatar';
+import StoriesTray from './components/app/StoriesTray';
 import HighlightsTray from './components/app/HighlightsTray';
 import App from './components/app/App';
 import UserProfileStoryItem from './components/app/profile/UserProfileStoryItem';
@@ -15,13 +16,13 @@ import LocationStoryItem from './components/app/LocationStoryItem';
 import HashtagStoryItem from './components/app/HashtagStoryItem';
 import InstagramApi from '../../../utils/InstagramApi';
 import {getTimeElapsed, getStorySlide, getLiveVideoManifestObject} from '../../../utils/Utils';
-import {setCurrentStoryObject, injectStoryContainer} from './utils/ContentUtils';
 import { MediaPlayer } from 'dashjs';
 import moment from 'moment';
 import $ from 'jquery';
 
 import {
   INSTAGRAM_MAIN_CONTAINER_CLASS_NAME,
+  INSTAGRAM_FEED_CONTAINER_CLASS_NAME,
   INSTAGRAM_FEED_CLASS_NAME,
   INSTAGRAM_LOCATION_FEED_CLASS_NAME,
   INSTAGRAM_HASHTAG_FEED_CLASS_NAME,
@@ -36,7 +37,7 @@ import {
   muiTheme
 } from '../../../utils/Constants';
 
-var instagramFeed, instagramLocationFeed,
+var instagramFeed, instagramFeedContainer, instagramLocationFeed,
 instagramHashtagFeed, instagramHashtagName, instagramUserImage, instagramUserUsername,
 instagramNativeStoriesContainer, storiesListContainer;
 export const proxyStore = new Store({portName: 'chrome-ig-story'});
@@ -68,6 +69,7 @@ chrome.runtime.onMessage.addListener(function(request, sender, sendResponse) {
 
 // determine the proper element that exists on the page and inject the corresponding data for it
 function injectContentScript() {
+  instagramFeedContainer = document.getElementsByClassName(INSTAGRAM_FEED_CONTAINER_CLASS_NAME)[0];
   instagramFeed = document.getElementsByClassName(INSTAGRAM_FEED_CLASS_NAME)[0];
   instagramLocationFeed = document.getElementsByClassName(INSTAGRAM_LOCATION_FEED_CLASS_NAME)[0];
   instagramHashtagFeed = document.getElementsByClassName(INSTAGRAM_HASHTAG_FEED_CLASS_NAME)[0];
@@ -75,19 +77,7 @@ function injectContentScript() {
   instagramUserImage = document.getElementsByClassName(INSTAGRAM_USER_IMAGE_CLASS_NAME)[0];
   instagramUserUsername = document.getElementsByClassName(INSTAGRAM_USER_USERNAME_CLASS_NAME)[0];
   instagramNativeStoriesContainer = document.getElementsByClassName(INSTAGRAM_NATIVE_STORIES_CONTAINER_CLASS_NAME)[0];
-  
-  if(instagramNativeStoriesContainer && !document.getElementById("storiesListContainer")) {
-  
-    $(instagramNativeStoriesContainer).empty();
     
-    storiesListContainer = document.createElement('div');
-    storiesListContainer.id = "storiesListContainer";
-    storiesListContainer.style.maxWidth = '293px';
-    instagramNativeStoriesContainer.parentNode.insertBefore(storiesListContainer, instagramNativeStoriesContainer.nextSibling);
-    
-    injectFriendStories();
-  }
-  
   if (instagramUserUsername) {
     getUserStory();
   } else if(instagramLocationFeed) {
@@ -101,6 +91,13 @@ function injectContentScript() {
     var hashtag = instagramHashtagName.innerText;
     hashtag = hashtag.replace('#', '');
     getHashtagStory(hashtag);
+  } else {
+    if(!document.getElementById("storiesListContainer")) {
+      if(instagramNativeStoriesContainer) {
+        $(instagramNativeStoriesContainer).remove();
+        injectFriendStories();
+      }
+    }
   }
 }
 
@@ -144,7 +141,8 @@ function getHashtagStory(hashtag) {
 
 // inject the user's friends' story tray in the homepage above the main feed on Instagram.com
 function injectFriendStories() {
-  renderStoriesList();
+  // renderStoriesList();
+  renderStoryTray();
   InstagramApi.getFriendStories((friendStoriesResponse) => {
     proxyStore.dispatch({
       type: 'SET_FRIEND_STORIES',
@@ -170,14 +168,12 @@ function injectUserStory(instagramUserImage, story) {
   var container = document.getElementsByClassName(INSTAGRAM_USER_IMAGE_CONTAINER_HOLDER_CLASS_NAME)[0];
   
   if(story.post_live_item) {
-    setCurrentStoryObject('LIVE_REPLAY', story);
     renderViewLiveReplayButton(story);
   }
   if(story.broadcast) {
-    setCurrentStoryObject('LIVE', story);
     renderViewLiveButton(story);
-  } else if(story.reel) {
-    setCurrentStoryObject('USER_STORY', story);
+  }
+  if(story.reel) {
     var storyUserImageClickJacker = document.createElement('div');
     
     var userProfileStoryItem = (
@@ -188,8 +184,6 @@ function injectUserStory(instagramUserImage, story) {
     
     renderStoryItem(userProfileStoryItem, storyUserImageClickJacker);
   }
-  
-  injectStoryContainer();
 }
 
 // inject the story highlights for a particular user while on their profile page e.g. Instagram.com/username
@@ -216,8 +210,6 @@ function injectLocationStory(story) {
   var storyItemComponent = (
     <LocationStoryItem storyItem={story}/>
   );
-  setCurrentStoryObject('USER_STORY', story);
-  injectStoryContainer();
   renderStoryItem(storyItemComponent, container);
 }
 
@@ -231,8 +223,6 @@ function injectHashtagStory(story) {
     <HashtagStoryItem storyItem={story}/>
   );
   
-  setCurrentStoryObject('USER_STORY', story);
-  injectStoryContainer();
   renderStoryItem(storyItemComponent, container);
 }
 
@@ -284,3 +274,31 @@ function renderStoriesList() {
       , storiesListContainer);
     });  
   }
+  
+  // render the story tray above the Instagram feed
+  function renderStoryTray() {
+    const anchor = document.createElement('div');
+    anchor.id = 'rcr-anchor';
+    if(!document.getElementById("rcr-anchor")) {
+      
+      if(!instagramNativeStoriesContainer) {
+        instagramFeed = document.getElementsByClassName(INSTAGRAM_NATIVE_STORIES_LIST_CONTAINER_CLASS_NAME)[0];
+      }
+      
+      instagramFeed.insertBefore(anchor, instagramFeed.childNodes[0]);
+      if(instagramFeedContainer) {
+        instagramFeedContainer.style.maxWidth = '600px';
+      }
+      
+      // wait for the store to connect to the background page
+      proxyStore.ready().then(() => {
+        render(
+          <Provider store={proxyStore}>
+            <MuiThemeProvider muiTheme={muiTheme}>
+              <StoriesTray/>
+            </MuiThemeProvider>  
+          </Provider>
+          , document.getElementById('rcr-anchor'));
+        });  
+      }
+    }
