@@ -7,7 +7,6 @@ import ReduxThunk from 'redux-thunk';
 var instagramCookies = {};
 var DOMAIN_URL = "https://www.instagram.com";
 var ajaxReinject = false;
-var setting_ViewStoriesAnonymously = true;
 const X_IG_CAPABILITIES = "3brTAw==";
 const USER_AGENT_STRING_ANDROID = "Instagram 10.33.0 Android (21/4.4.4; 240dpi; 480x800; Samsung Galaxy S2 - 4.4.4 - API 21 - 480x800; en_US)";
 const USER_AGENT_STRING_IOS = "Instagram 10.26.0 (iPhone7,2; iOS 10_1_1; en_US; en-US; scale=2.00; gamut=normal; 750x1334) AppleWebKit/420+";
@@ -103,7 +102,10 @@ function authCookiesValid() {
 
 function applySettings() {
   chrome.storage.local.get("viewStoriesAnonymously", function(items) {
-    setting_ViewStoriesAnonymously = (items.viewStoriesAnonymously) ? true : false;
+    store.dispatch({
+      type: 'SET_VIEW_STORIES_ANONYMOUSLY',
+      viewStoriesAnonymously: (items.viewStoriesAnonymously === undefined || items.viewStoriesAnonymously) ? true : false
+    });  
   });
 }
 
@@ -136,7 +138,10 @@ chrome.runtime.onMessage.addListener(
     for (var key in changes) {
       var storageChange = changes[key];
       if(key === 'viewStoriesAnonymously') {
-        setting_ViewStoriesAnonymously = storageChange.newValue;
+        store.dispatch({
+          type: 'SET_VIEW_STORIES_ANONYMOUSLY',
+          viewStoriesAnonymously: storageChange.newValue
+        });
       }
     }
   });
@@ -150,18 +155,6 @@ chrome.runtime.onMessage.addListener(
       }
     }
   });
-  
-  // listen for web requests so we can cancel them if necessary
-  chrome.webRequest.onBeforeRequest.addListener(
-    function() {
-      // cancel the request to mark a story as seen if the setting to view stories anonymously is set to true
-      return {cancel: (setting_ViewStoriesAnonymously) ? true : false};
-    },
-    {
-      urls: ["*://*.instagram.com/stories/reel/seen"]
-    },
-    ["blocking"]
-  );
   
   // hook into web request and modify headers before sending the request
   chrome.webRequest.onBeforeSendHeaders.addListener(
@@ -188,6 +181,23 @@ chrome.runtime.onMessage.addListener(
       // tampering with the headers on any other request will give you errors
       if(shouldInjectHeaders) {
         headers.push({name: "x-ig-capabilities", value: X_IG_CAPABILITIES});
+        
+        if(info.url.includes('seen')) {
+          // 'seen' request requires csrftoken header
+          headers.push({
+            name: 'x-csrftoken',
+            value: instagramCookies.csrftoken
+          },
+          {
+            name: 'origin',
+            value: 'https://www.instagram.com'
+          },
+          {
+            name: 'referer',
+            value: 'https://www.instagram.com/'
+          });
+        }
+        
         for (var i = 0; i < headers.length; i++) {
           var header = headers[i];
           if(header.name.toLowerCase() == 'referer') {

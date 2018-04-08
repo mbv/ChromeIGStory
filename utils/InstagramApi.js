@@ -7,12 +7,14 @@ import {
   TOP_LIVE_API,
   LIVE_API,
   HIGHLIGHTS_API,
+  SEEN_API,
   SIG_KEY,
   SIG_KEY_VERSION
 } from './Constants';
 
 import JSONbig from 'json-bigint';
 import hmacSHA256 from 'crypto-js/hmac-sha256';
+import moment from 'moment';
 
 // fetch a particular user's story
 function getStory(userId, callback) {
@@ -234,6 +236,33 @@ function getUserByUsername(username) {
   });
 }
 
+function setStorySeen(storyItem, callback) {
+  var params = {
+    reelMediaId: storyItem.pk,
+    reelMediaOwnerId: storyItem.user.pk,
+    reelId: storyItem.user.pk,
+    reelMediaTakenAt: storyItem.taken_at,
+    viewSeenAt: moment().unix()
+  }
+  
+  return new Promise(function(resolve, reject) {
+    fetch(SEEN_API, {
+      method: 'post',
+      credentials: 'include',
+      headers: {
+        'Content-Type': 'application/x-www-form-urlencoded'
+      },
+      body: searchParams(params)
+    })
+    .then(checkStatus)
+    .then(parseJSON)
+    .then(callback)
+    .catch(function(e) {
+      reject(e);
+    });
+  });
+}
+
 function checkStatus(response) {
   if (response.status >= 200 && response.status < 300) {
     return response;
@@ -284,6 +313,7 @@ const InstagramApi = {
   getLiveVideoReplayComments,
   getUserInfo,
   getUserByUsername,
+  setStorySeen,
   searchForUser,
   searchForHashtag,
   searchForLocation

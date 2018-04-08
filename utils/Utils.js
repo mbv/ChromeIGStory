@@ -233,6 +233,22 @@ function renderStoryImage(item) {
   )
 }
 
+export function toggleAnonymousStoryViews(callback) {
+  chrome.storage.local.get("viewStoriesAnonymously", function(items) {
+    var viewStoriesAnonymously = (items.viewStoriesAnonymously) ? false : true;
+    setStorageItem("viewStoriesAnonymously", viewStoriesAnonymously);
+    callback(viewStoriesAnonymously);
+  }.bind(this));
+}
+
+export function setStorageItem(key, value, callback) {
+  chrome.storage.local.set({[key]: value}, function() {
+    if(callback) {
+      callback();
+    }
+  });
+}
+
 // returns a parsed manifest object from a dash manifest string representation
 export function getLiveVideoManifestObject(manifest) {
   const parser = DashParser().create({errorHandler: ErrorHandler().getInstance()});

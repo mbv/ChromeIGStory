@@ -1,10 +1,12 @@
 import React, { Component } from 'react';
+import {connect} from 'react-redux';
 import StoryGallery from 'react-image-gallery';
 import StoryProgress from './StoryProgress';
 import Avatar from 'material-ui/Avatar';
 import Chip from 'material-ui/Chip';
 import LinkIcon from 'material-ui/svg-icons/content/link';
 import {isVideo, getTimeElapsed} from './Utils';
+import InstagramApi from './InstagramApi';
 import AnalyticsUtil from './AnalyticsUtil';
 
 import {
@@ -21,6 +23,10 @@ class Story extends Component {
     };
   }
   
+  componentDidMount() {
+    this.setStorySeen();
+  }
+  
   componentWillReceiveProps = (nextProps) => {
     if(nextProps.item.key !== this.props.item.key) {
       this._imageGallery.slideToIndex(0);
@@ -35,6 +41,11 @@ class Story extends Component {
     return (item.story.reel) ? item.story.reel.items[0] : item.story.items[0]
   }
   
+  getCurrentStoryItem() {
+    var storyItems = (this.props.item.story.reel) ? this.props.item.story.reel.items : this.props.item.story.items;
+    return storyItems[this._imageGallery.getCurrentIndex()];
+  }
+  
   onSlide(currentIndex) {
     if(this.state.currentIndex >= 0) {
       var previousMedia = this.props.item.media[this.state.currentIndex];
@@ -46,13 +57,13 @@ class Story extends Component {
       }
     }
     this.playStory(currentIndex);
+    this.setStorySeen();
   }
   
   playStory(currentIndex) {
     if(this._imageGallery) {
-      var storyItems = (this.props.item.story.reel) ? this.props.item.story.reel.items : this.props.item.story.items;
       this.setState({
-        currentStoryItem: storyItems[this._imageGallery.getCurrentIndex()],
+        currentStoryItem: this.getCurrentStoryItem(),
         currentIndex: currentIndex
       });
       
@@ -77,6 +88,12 @@ class Story extends Component {
         video.pause();
         this.setState({isVideoPlaying: false});
       }
+    }
+  }
+  
+  setStorySeen() {
+    if(!this.props.viewStoriesAnonymously) {
+      InstagramApi.setStorySeen(this.getCurrentStoryItem());
     }
   }
   
@@ -341,4 +358,10 @@ render() {
 }
 }
 
-export default Story;
+const mapStateToProps = (state) => {
+  return {
+    viewStoriesAnonymously: state.stories.viewStoriesAnonymously
+  };
+};
+
+export default connect(mapStateToProps)(Story);

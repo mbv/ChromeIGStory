@@ -10,6 +10,8 @@ import IconButton from 'material-ui/IconButton';
 import OpenInNewIcon from 'material-ui/svg-icons/action/open-in-new';
 import ActionExploreIcon from 'material-ui/svg-icons/action/explore';
 import ActionSearchIcon from 'material-ui/svg-icons/action/search';
+import VisibilityOnIcon from 'material-ui/svg-icons/action/visibility';
+import VisibilityOffIcon from 'material-ui/svg-icons/action/visibility-off';
 import PeopleIcon from 'material-ui/svg-icons/social/people';
 import LiveTvIcon from 'material-ui/svg-icons/notification/live-tv';
 import PlaceIcon from 'material-ui/svg-icons/maps/place';
@@ -28,7 +30,7 @@ import Story from '../../../../../utils/Story';
 import LiveVideo from '../../../../../utils/LiveVideo';
 import SearchPage from '../search/SearchPage';
 import InstagramApi from '../../../../../utils/InstagramApi';
-import {renderToolbar} from '../../../../../utils/Utils';
+import {renderToolbar, toggleAnonymousStoryViews} from '../../../../../utils/Utils';
 import AnalyticsUtil from '../../../../../utils/AnalyticsUtil';
 import $ from 'jquery';
 
@@ -189,6 +191,17 @@ class App extends Component {
     
     const toolbarActionsGroup = (
       <ToolbarGroup lastChild={true}>
+        <IconButton
+          tooltip={"Anonymous Viewing " + ((this.props.viewStoriesAnonymously) ? "Enabled" : "Disabled")}
+          tooltipPosition="bottom-center"
+          onClick={() => toggleAnonymousStoryViews((viewStoriesAnonymously) => {
+            this.props.dispatch({
+              type: 'SET_VIEW_STORIES_ANONYMOUSLY',
+              viewStoriesAnonymously: viewStoriesAnonymously
+            });
+          })}>
+          {(this.props.viewStoriesAnonymously) ? <VisibilityOffIcon /> : <VisibilityOnIcon />}
+        </IconButton>
       {!this.props.isSearchActive &&
         <IconButton
         tooltip="Search"
@@ -307,6 +320,7 @@ const mapStateToProps = (state) => {
     isFullPopup: state.popup.isFullPopup,
     isSnackbarActive: state.popup.isSnackbarActive,
     isSearchActive: state.popup.isSearchActive,
+    viewStoriesAnonymously: state.stories.viewStoriesAnonymously,
     isCookiesValid: state.popup.isCookiesValid
   };
 };

@@ -8,7 +8,8 @@ const initialState = {
     top_live: []
   },
   locationStories: [],
-  topLiveVideos: []
+  topLiveVideos: [],
+  viewStoriesAnonymously: true
 };
 
 export default (state = initialState, action) => {
@@ -27,6 +28,11 @@ export default (state = initialState, action) => {
     return {
       ...state,
       topLiveVideos: action.topLiveVideos
+    }
+    case 'SET_VIEW_STORIES_ANONYMOUSLY':
+    return {
+      ...state,
+      viewStoriesAnonymously: action.viewStoriesAnonymously
     }
     default:
     return state;

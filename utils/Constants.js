@@ -13,6 +13,7 @@ export const EXPLORE_API = API_BASE + "discover/explore/";
 export const TOP_LIVE_API = API_BASE + "discover/top_live/";
 export const LIVE_API = API_BASE + "live/";
 export const HIGHLIGHTS_API = API_BASE + "highlights/";
+export const SEEN_API = "https://www.instagram.com/stories/reel/seen";
 
 // Instagram website class names
 export const INSTAGRAM_MAIN_CONTAINER_CLASS_NAME = "_8fi2q";

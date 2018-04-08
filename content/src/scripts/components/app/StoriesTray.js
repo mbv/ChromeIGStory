@@ -8,6 +8,8 @@ import IconButton from 'material-ui/IconButton';
 import OpenInNewIcon from 'material-ui/svg-icons/action/open-in-new';
 import ActionExploreIcon from 'material-ui/svg-icons/action/explore';
 import ActionSearchIcon from 'material-ui/svg-icons/action/search';
+import VisibilityOnIcon from 'material-ui/svg-icons/action/visibility';
+import VisibilityOffIcon from 'material-ui/svg-icons/action/visibility-off';
 import PeopleIcon from 'material-ui/svg-icons/social/people';
 import SettingsIcon from 'material-ui/svg-icons/action/settings';
 import StoryTrayItem from './StoryTrayItem';
@@ -15,7 +17,7 @@ import LiveVideoTrayItem from './LiveVideoTrayItem';
 import LiveVideoReplayTrayItem from './LiveVideoReplayTrayItem';
 import StoryContainer from './StoryContainer';
 // import StoryGallery from './StoryGallery';
-import {renderToolbar, fetchStory} from '../../../../../utils/Utils';
+import {renderToolbar, fetchStory, toggleAnonymousStoryViews} from '../../../../../utils/Utils';
 import InstagramApi from '../../../../../utils/InstagramApi';
 import {getStoryGalleryItems, setCurrentStoryObject} from '../../utils/ContentUtils';
 
@@ -222,6 +224,17 @@ render() {
   const toolbarActionsGroup = (
     <ToolbarGroup lastChild={true} style={{flexDirection: 'row'}}>
       <IconButton
+        tooltip={"Anonymous Viewing " + ((this.props.viewStoriesAnonymously) ? "Enabled" : "Disabled")}
+        tooltipPosition="top-center"
+        onClick={() => toggleAnonymousStoryViews((viewStoriesAnonymously) => {
+          this.props.dispatch({
+            type: 'SET_VIEW_STORIES_ANONYMOUSLY',
+            viewStoriesAnonymously: viewStoriesAnonymously
+          });
+        })}>
+        {(this.props.viewStoriesAnonymously) ? <VisibilityOffIcon /> : <VisibilityOnIcon />}
+      </IconButton>
+      <IconButton
         tooltip={(this.state.selectedStoryTrayType === 'explore') ? 'Friends' : 'Explore'}
         tooltipPosition="bottom-center"
         onClick={()=> {
@@ -261,7 +274,8 @@ const mapStateToProps = (state) => {
     friendStories: state.stories.friendStories,
     exploreStories: state.stories.exploreStories,
     topLiveVideos: state.stories.topLiveVideos,
-    isStoryModalOpen: state.content.isStoryModalOpen
+    viewStoriesAnonymously: state.stories.viewStoriesAnonymously,
+    isStoryModalOpen: state.content.isStoryModalOpen,
   };
 };
 
