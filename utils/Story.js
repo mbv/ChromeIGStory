@@ -107,15 +107,15 @@ class Story extends Component {
   }
   
   hasReelMentions() {
-    return this.state.currentStoryItem.reel_mentions.length > 0;
+    return this.state.currentStoryItem.reel_mentions && this.state.currentStoryItem.reel_mentions.length > 0;
   }
   
   hasHashtags() {
-    return this.state.currentStoryItem.story_hashtags.length > 0;
+    return this.state.currentStoryItem.story_hashtags && this.state.currentStoryItem.story_hashtags.length > 0;
   }
   
   hasLocations() {
-    return this.state.currentStoryItem.story_locations.length > 0;
+    return this.state.currentStoryItem.story_locations && this.state.currentStoryItem.story_locations.length > 0;
   }
   
   hasStoryTags() {
