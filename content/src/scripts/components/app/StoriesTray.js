@@ -17,7 +17,7 @@ import LiveVideoTrayItem from './LiveVideoTrayItem';
 import LiveVideoReplayTrayItem from './LiveVideoReplayTrayItem';
 import StoryContainer from './StoryContainer';
 // import StoryGallery from './StoryGallery';
-import {renderToolbar, fetchStory, toggleAnonymousStoryViews} from '../../../../../utils/Utils';
+import {renderToolbar, fetchStory, toggleAnonymousStoryViews, downloadStories} from '../../../../../utils/Utils';
 import InstagramApi from '../../../../../utils/InstagramApi';
 import {getStoryGalleryItems, setCurrentStoryObject} from '../../utils/ContentUtils';
 
@@ -28,6 +28,8 @@ import {
   POPUP_CONTAINER_WIDTH,
   POPUP_CONTAINER_HEIGHT
 } from '../../../../../utils/Constants';
+import DownloadIcon from "material-ui/svg-icons/file/file-download";
+import CircularProgress from "material-ui/CircularProgress";
 
 class StoriesTray extends Component {
   constructor(props) {
@@ -39,7 +41,8 @@ class StoriesTray extends Component {
       currentStoryGalleryItem: null,
       storyGalleryItems: [],
       currentStoryGalleryType: null,
-      selectedStoryTrayType: 'friends'
+      selectedStoryTrayType: 'friends',
+      isDownloadingStories: false
     }
   }
   
@@ -233,6 +236,17 @@ render() {
           });
         })}>
         {(this.props.viewStoriesAnonymously) ? <VisibilityOffIcon /> : <VisibilityOnIcon />}
+      </IconButton>
+      <IconButton
+        tooltip={"Download All stories"}
+        tooltipPosition="top-center"
+        onClick={() => {
+          this.setState({isDownloadingStories: true});
+          downloadStories(this.props.storyItem, () => {
+            this.setState({isDownloadingStories: false});
+          });
+        }}>
+        {(this.state.isDownloadingStories) ? <CircularProgress size={20} /> : <DownloadIcon />}
       </IconButton>
       <IconButton
         tooltip={(this.state.selectedStoryTrayType === 'explore') ? 'Friends' : 'Explore'}

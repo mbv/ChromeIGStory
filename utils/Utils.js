@@ -136,6 +136,33 @@ export function downloadStory(trayItem, callback) {
   });
 }
 
+// downloads a zip file containing the user friend stories
+export function downloadStories(stories, callback) {
+  var zip = new JSZip();
+  var storyPromises = stories.friendStories.tray.map((user) => new Promise(function(resolve) {
+    fetchStory({id: user.id}, false, (story) => {
+      resolve(story);
+    });
+  }));
+  Promise.all(storyPromises).then(fetchedStories => {
+    fetchedStories.map(user => {
+      user.reel.items.map((storyItem) => {
+        var mediaItemUrl = getMediaItemUrl(storyItem);
+        // downloads each Story image/video and adds it to the zip file
+        zip.file(getUserStoryFileName(user.reel.user.username, storyItem, mediaItemUrl), urlToPromise(mediaItemUrl), {binary: true});
+      });
+    });
+    // generate zip file and start download
+    zip.generateAsync({type: "blob"})
+      .then(function (content) {
+        FileSaver.saveAs(content, getZipStoriesFileName());
+        if (callback) {
+          callback();
+        }
+      });
+  });
+}
+
 // promises to download the file before zipping it
 function urlToPromise(url) {
   return new Promise(function(resolve, reject) {
@@ -161,9 +188,19 @@ function getZipFileName(trayItem) {
   return name + "-" + moment().format() + ".zip";
 }
 
+// returns the name of the zip file to download with format: (timestamp.zip)
+function getZipStoriesFileName() {
+  return moment().format() + ".zip";
+}
+
 // returns the name of the image/video file to add to the zip file
 function getStoryFileName(storyItem, mediaItemUrl) {
   return storyItem['id'] + (((mediaItemUrl.includes(".mp4")) ? ".mp4" : ".jpg"));
+}
+
+// returns the name of the image/video file to add to the zip file in folder with name as username
+function getUserStoryFileName(username, storyItem, mediaItemUrl) {
+  return username + '/' + getStoryFileName(storyItem, mediaItemUrl);
 }
 
 export function renderToolbar(additionalGroup) {

@@ -30,7 +30,7 @@ import Story from '../../../../../utils/Story';
 import LiveVideo from '../../../../../utils/LiveVideo';
 import SearchPage from '../search/SearchPage';
 import InstagramApi from '../../../../../utils/InstagramApi';
-import {renderToolbar, toggleAnonymousStoryViews} from '../../../../../utils/Utils';
+import {downloadStories, renderToolbar, toggleAnonymousStoryViews} from '../../../../../utils/Utils';
 import AnalyticsUtil from '../../../../../utils/AnalyticsUtil';
 import $ from 'jquery';
 
@@ -43,6 +43,7 @@ import {
   POPUP_CONTAINER_WIDTH,
   POPUP_CONTAINER_HEIGHT
 } from '../../../../../utils/Constants';
+import DownloadIcon from "material-ui/svg-icons/file/file-download";
 
 const tabNames = ["Friends", "Explore", "Live", "Locations"];
 
@@ -55,7 +56,8 @@ class App extends Component {
       isFriendsTabLoading: true,
       isExploreTabLoading: true,
       isLiveTabLoading: true,
-      isFullPopup: false
+      isFullPopup: false,
+      isDownloadingStories: false
     }
   }
 
@@ -201,6 +203,17 @@ class App extends Component {
             });
           })}>
           {(this.props.viewStoriesAnonymously) ? <VisibilityOffIcon /> : <VisibilityOnIcon />}
+        </IconButton>
+        <IconButton
+          tooltip={"Download All stories"}
+          tooltipPosition="bottom-center"
+          onClick={() => {
+            this.setState({isDownloadingStories: true});
+            downloadStories(this.props.stories, () => {
+              this.setState({isDownloadingStories: false});
+            });
+          }}>
+          {(this.state.isDownloadingStories) ? <CircularProgress size={20} /> : <DownloadIcon />}
         </IconButton>
       {!this.props.isSearchActive &&
         <IconButton
